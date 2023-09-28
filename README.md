@@ -169,23 +169,6 @@ REST-APIs, RabbitMQ - notifications
 
 ### Notifications Module (using RabbitMQ):
 
-- JSON Request to Send a Notification:
-
-```sh
-{
-  "user_id": "12345",
-  "message": "Don't forget your upcoming workout session tomorrow at 8:00 AM."
-}
-```
-
-- JSON Response for Notification Request:
- ```sh
-{
-  "status": "success",
-  "message": "Notification sent successfully"
-}
-```
-
 ```sh
 syntax = "proto3";
 
