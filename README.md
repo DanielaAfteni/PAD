@@ -61,9 +61,9 @@ REST-APIs, RabbitMQ - notifications
 
 ### System architecture diagram
 
-![General Overview](diagram/General_Overview.jpg)
+![General Overview](diagram/general_Overview.jpg)
 
-![Notifications Diagram](diagram/Notifications_Diagram.jpg)
+![Notifications Diagram](diagram/notifications_Diagram.jpg)
 
 ## Design Data Management
 
