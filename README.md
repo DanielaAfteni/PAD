@@ -7,21 +7,21 @@ The aim of this project is to develop a complex application that addresses sever
 ### Service Boundaries
 
  - Fitness data service
--- Integration with Xiaomi Mi Fitness devices to collect data on users' physical activity and health.
--- Create a scoring system and weekly summary to assess users' health and wellness progress.
+    - Integration with Xiaomi Mi Fitness devices to collect data on users' physical activity and health.
+    - Create a scoring system and weekly summary to assess users' health and wellness progress.
 
 - Integration with moodle
--- Implement a notification system to inform users about upcoming labs and exams.
--- Creating an absence monitoring system that calculates their estimated costs on academic performance.
--- Providing useful information about university resources, internship opportunities and information about alumni and personal mentors.
+    - Implement a notification system to inform users about upcoming labs and exams.
+    - Creating an absence monitoring system that calculates their estimated costs on academic performance.
+    - Providing useful information about university resources, internship opportunities and information about alumni and personal mentors.
 
 - Mentor for study
--- Development of an interface for learning and testing with flashcards, including the ability to customize and edit them.
--- Implementation of a voice recognition and text-to-speech conversion mode to facilitate users' access to learning content while on the go.
--- Creating two modes for learning cards: learning mode and test mode.
--- Integration with GPT Chat to provide additional support and answers to various questions.
--- Developing a user-friendly interface for desktop, iOS and Android.
--- Implementation of a voice recognition system and voice commands for all components of the application.
+    - Development of an interface for learning and testing with flashcards, including the ability to customize and edit them.
+    - Implementation of a voice recognition and text-to-speech conversion mode to facilitate users' access to learning content while on the go.
+    - Creating two modes for learning cards: learning mode and test mode.
+    - Integration with GPT Chat to provide additional support and answers to various questions.
+    - Developing a user-friendly interface for desktop, iOS and Android.
+    - Implementation of a voice recognition system and voice commands for all components of the application.
 
 
 
@@ -61,9 +61,9 @@ REST-APIs, RabbitMQ - notifications
 
 ### System architecture diagram
 
-![General Overview](General Overview.jpg)
+![General Overview](diagram/General_Overview.jpg)
 
-![Notifications Diagram](Notifications Diagram.jpg)
+![Notifications Diagram](diagram/Notifications_Diagram.jpg)
 
 ## Design Data Management
 
