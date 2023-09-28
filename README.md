@@ -57,6 +57,7 @@ Docker simplifies the deployment process. You can create a Docker image once and
 ### Technology Stack and Communication Patterns
 
 .net MAUI, python, C# , Ruby -languages
+
 REST-APIs, RabbitMQ - notifications
 
 ### System architecture diagram
