@@ -377,4 +377,4 @@ if __name__ == '__main__':
 
 
 
-# py tts_stt_sever.py
+# py tts_stt_service.py
