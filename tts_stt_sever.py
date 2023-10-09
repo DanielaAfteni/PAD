@@ -251,11 +251,13 @@ from datetime import datetime
 import threading
 import time
 import concurrent.futures  # Import the concurrent.futures module
+import pyttsx3
 
 app = Flask(__name__)
 
 user_list = []
 service_status = "Healthy"  # Initial status
+text_to_speech = pyttsx3.init()
 
 # Limit the number of concurrent tasks to 10
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
@@ -297,8 +299,13 @@ def tts():
     if request.method == 'POST':
         new_user_email = request.form['user_email']
         new_phrase = request.form['phrase']
+        new_tts = request.form['tts']
 
         current_time = datetime.now()
+        
+        print(new_tts)
+        # text_to_speech.say(new_tts)
+        # text_to_speech.runAndWait()
 
         try:
             new_obj = run_with_timeout(
@@ -313,14 +320,19 @@ def tts():
             return jsonify(user_list), 201
         except TimeoutError:
             return jsonify({"error": "Request timed out"}), 500
+        
+        return jsonify({}), 200
 
 @app.route('/stt', methods=['POST'])
 def stt():
     if request.method == 'POST':
         new_user_email = request.form['user_email']
         new_phrase = request.form['phrase']
+        new_stt = request.form['stt']
 
         current_time = datetime.now()
+        
+        print(new_stt)
 
         try:
             new_obj = run_with_timeout(
@@ -335,6 +347,9 @@ def stt():
             return jsonify(user_list), 201
         except TimeoutError:
             return jsonify({"error": "Request timed out"}), 500
+        
+        return jsonify({}), 200
+    
 
 @app.route('/status', methods=['GET'])
 def get_status():
@@ -359,3 +374,7 @@ if __name__ == '__main__':
     health_check_thread.start()
 
     app.run(host="0.0.0.0", port=80, debug=True)
+
+
+
+# py tts_stt_sever.py
