@@ -6,6 +6,19 @@ import concurrent.futures  # Import the concurrent.futures module
 import os
 from dotenv import load_dotenv
 import requests
+import sqlite3
+
+connection = sqlite3.connect("config.db")
+cursor = connection.cursor()
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS api_config (
+                    id INTEGER PRIMARY KEY,
+                    api_key TEXT
+                 )''')
+
+# Commit the changes and close the connection
+connection.commit()
+connection.close()
 
 app = Flask(__name__)
 
@@ -62,9 +75,18 @@ def tts():
         
         # Set your OpenAI API key
         # api_key = "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"
-        load_dotenv()
-        api_key = os.environ.get('YOUR_API_KEY')
-        # print(api_key)
+
+
+        # load_dotenv()
+        # api_key = os.environ.get('YOUR_API_KEY')
+
+         # Retrieve the API key from the database
+        api_key = get_api_key()
+
+
+        print(api_key)
+        # print(type(api_key))
+        # api_key = str(api_key)
 
         # Define the API endpoint
         api_endpoint = "https://api.openai.com/v1/chat/completions"
@@ -126,11 +148,43 @@ def check_health():
             service_status = "Healthy"
         time.sleep(10)  # Check health every 10 seconds
 
+
+
+def get_api_key():
+    connection = sqlite3.connect("config.db")
+    cursor = connection.cursor()
+
+    # Retrieve the API key from the database
+    cursor.execute("SELECT api_key FROM api_config WHERE id = 1")
+    api_key = cursor.fetchone()
+
+    connection.close()
+
+    return api_key[0] if api_key else None
+
+
+def insert_api_key(api_key):
+    connection = sqlite3.connect("config.db")
+    cursor = connection.cursor()
+
+    # Insert the API key into the database
+    cursor.execute("INSERT INTO api_config (api_key) VALUES (?)", (api_key,))
+    connection.commit()
+    connection.close()
+
+# Insert your API key into the database
+
+# insert_api_key("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")
+
+
 if __name__ == '__main__':
     # Start a thread for health checking
     health_check_thread = threading.Thread(target=check_health)
     health_check_thread.daemon = True
     health_check_thread.start()
+    insert_api_key("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")
+
+    
 
     app.run(host="0.0.0.0", port=5000, debug=True)
 

@@ -254,6 +254,7 @@ import concurrent.futures  # Import the concurrent.futures module
 import pyttsx3
 from flask import Flask, request, send_file
 from gtts import gTTS
+import os
 
 app = Flask(__name__)
 
@@ -313,7 +314,9 @@ def tts():
         tts.save('output.mp3')
         
         # Send the file to the user for download
-        send_file('output.mp3', as_attachment=True)
+        # send_file('output.mp3', as_attachment=True)
+        output_file_path = os.path.join(os.getcwd(), 'output.mp3')
+        send_file(output_file_path, as_attachment=True)
 
 
         print(new_tts)
