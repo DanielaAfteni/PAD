@@ -3,13 +3,15 @@ from datetime import datetime
 import threading
 import time
 import concurrent.futures  # Import the concurrent.futures module
-import pyttsx3
+import os
+from dotenv import load_dotenv
+import requests
 
 app = Flask(__name__)
 
 user_list = []
 service_status = "Healthy"  # Initial status
-text_to_speech = pyttsx3.init()
+
 
 # Limit the number of concurrent tasks to 10
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
@@ -56,6 +58,40 @@ def tts():
         current_time = datetime.now()
         
         print(new_question)
+        
+        
+        # Set your OpenAI API key
+        # api_key = "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"
+        load_dotenv()
+        api_key = os.environ.get('YOUR_API_KEY')
+        # print(api_key)
+
+        # Define the API endpoint
+        api_endpoint = "https://api.openai.com/v1/chat/completions"
+
+        # Define the prompt you want to send to the model
+        prompt = new_question
+
+        # Send a POST request to the API
+        response = requests.post(
+            api_endpoint,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+            },
+            json={
+                "model": "gpt-3.5-turbo",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7
+            }
+        )
+
+        # Parse and print the response
+        if response.status_code == 200:
+            data = response.json()
+            completions = data["choices"][0]["message"]["content"]
+            print(completions)
+        else:
+            print("Request failed with status code:", response.status_code)
 
         try:
             new_obj = run_with_timeout(

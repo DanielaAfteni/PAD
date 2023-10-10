@@ -252,6 +252,8 @@ import threading
 import time
 import concurrent.futures  # Import the concurrent.futures module
 import pyttsx3
+from flask import Flask, request, send_file
+from gtts import gTTS
 
 app = Flask(__name__)
 
@@ -303,6 +305,17 @@ def tts():
 
         current_time = datetime.now()
         
+
+        # Create a gTTS object
+        tts = gTTS(new_tts)
+        
+        # Save the generated speech as a temporary file
+        tts.save('output.mp3')
+        
+        # Send the file to the user for download
+        send_file('output.mp3', as_attachment=True)
+
+
         print(new_tts)
         # text_to_speech.say(new_tts)
         # text_to_speech.runAndWait()
