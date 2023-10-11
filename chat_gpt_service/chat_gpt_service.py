@@ -8,17 +8,17 @@ from dotenv import load_dotenv
 import requests
 import sqlite3
 
-connection = sqlite3.connect("config.db")
-cursor = connection.cursor()
+# connection = sqlite3.connect("config.db")
+# cursor = connection.cursor()
 
-cursor.execute('''CREATE TABLE IF NOT EXISTS api_config (
-                    id INTEGER PRIMARY KEY,
-                    api_key TEXT
-                 )''')
+# cursor.execute('''CREATE TABLE IF NOT EXISTS api_config (
+#                     id INTEGER PRIMARY KEY,
+#                     api_key TEXT
+#                  )''')
 
-# Commit the changes and close the connection
-connection.commit()
-connection.close()
+# # Commit the changes and close the connection
+# connection.commit()
+# connection.close()
 
 app = Flask(__name__)
 
@@ -77,11 +77,11 @@ def tts():
         # api_key = "a"
 
 
-        # load_dotenv()
-        # api_key = os.environ.get('YOUR_API_KEY')
+        load_dotenv()
+        api_key = os.environ.get('YOUR_API_KEY')
 
          # Retrieve the API key from the database
-        api_key = get_api_key()
+        # api_key = get_api_key()
 
 
         print(api_key)
@@ -150,31 +150,31 @@ def check_health():
 
 
 
-def get_api_key():
-    connection = sqlite3.connect("config.db")
-    cursor = connection.cursor()
+# def get_api_key():
+#     connection = sqlite3.connect("config.db")
+#     cursor = connection.cursor()
 
-    # Retrieve the API key from the database
-    cursor.execute("SELECT api_key FROM api_config WHERE id = 1")
-    api_key = cursor.fetchone()
+#     # Retrieve the API key from the database
+#     cursor.execute("SELECT api_key FROM api_config WHERE id = 1")
+#     api_key = cursor.fetchone()
 
-    connection.close()
+#     connection.close()
 
-    return api_key[0] if api_key else None
+#     return api_key[0] if api_key else None
 
 
-def insert_api_key(api_key):
-    connection = sqlite3.connect("config.db")
-    cursor = connection.cursor()
+# def insert_api_key(api_key):
+#     connection = sqlite3.connect("config.db")
+#     cursor = connection.cursor()
 
-    # Insert the API key into the database
-    cursor.execute("INSERT INTO api_config (api_key) VALUES (?)", (api_key,))
-    connection.commit()
-    connection.close()
+#     # Insert the API key into the database
+#     cursor.execute("INSERT INTO api_config (api_key) VALUES (?)", (api_key,))
+#     connection.commit()
+#     connection.close()
 
-# Insert your API key into the database
+# # Insert your API key into the database
 
-insert_api_key("a")
+# insert_api_key("a")
 
 
 if __name__ == '__main__':
