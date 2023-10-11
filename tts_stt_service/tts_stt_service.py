@@ -251,16 +251,18 @@ from datetime import datetime
 import threading
 import time
 import concurrent.futures  # Import the concurrent.futures module
-import pyttsx3
 from flask import Flask, request, send_file
 from gtts import gTTS
 import os
+import speech_recognition as sr
+from pydub import AudioSegment
+
 
 app = Flask(__name__)
 
 user_list = []
 service_status = "Healthy"  # Initial status
-text_to_speech = pyttsx3.init()
+recognizer = sr.Recognizer()
 
 # Limit the number of concurrent tasks to 10
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
@@ -318,10 +320,7 @@ def tts():
         output_file_path = os.path.join(os.getcwd(), 'output.mp3')
         send_file(output_file_path, as_attachment=True)
 
-
         print(new_tts)
-        # text_to_speech.say(new_tts)
-        # text_to_speech.runAndWait()
 
         try:
             new_obj = run_with_timeout(

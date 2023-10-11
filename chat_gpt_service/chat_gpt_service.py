@@ -74,7 +74,7 @@ def tts():
         
         
         # Set your OpenAI API key
-        # api_key = "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"
+        # api_key = "a"
 
 
         # load_dotenv()
@@ -174,7 +174,7 @@ def insert_api_key(api_key):
 
 # Insert your API key into the database
 
-# insert_api_key("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")
+insert_api_key("a")
 
 
 if __name__ == '__main__':
@@ -182,7 +182,6 @@ if __name__ == '__main__':
     health_check_thread = threading.Thread(target=check_health)
     health_check_thread.daemon = True
     health_check_thread.start()
-    insert_api_key("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")
 
     
 
