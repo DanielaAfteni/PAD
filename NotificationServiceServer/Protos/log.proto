@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "NotificationServiceServer";
+
+import "google/protobuf/timestamp.proto";
+package log;
+// The greeting service definition.
+service Notification {
+  // Sends a greeting
+  rpc SaveLogToRabbit (LogRequest) returns (LogReply);
+}
+
+message LogRequest {
+  string serviceName = 1;
+  string serviceMessage = 2;
+  google.protobuf.Timestamp time = 3;
+}
+
+// The response message containing the greetings.
+message LogReply {
+  bool isSuccess = 1;
+}
