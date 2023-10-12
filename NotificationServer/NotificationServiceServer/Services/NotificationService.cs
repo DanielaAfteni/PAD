@@ -19,7 +19,7 @@ namespace NotificationServiceServer.Services
             try
             {
                 var stringRequest = JsonSerializer.Serialize(request);
-                var test = DateTimeOffset.FromUnixTimeSeconds(request.Time.Seconds).DateTime;
+                //Thread.Sleep(2000);
                 _rabbitMqPublisher.SendQueueAsyncAck("Notifications", stringRequest);
                 return Task.FromResult(new LogReply { IsSuccess = true });
             }

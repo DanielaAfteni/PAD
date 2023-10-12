@@ -4,6 +4,8 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>c7667c54-1eac-48fd-a59f-ddb53445b619</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="MongoDB.Bson" Version="2.22.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
     <PackageReference Include="MongoDB.Driver.Core" Version="2.22.0" />
@@ -25,7 +28,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<Protobuf Include="Protos\log.proto" GrpcServices="Server" />
+		<Protobuf Include="Protos\log.proto" GrpcServices="Client" />
 	</ItemGroup>
 
 </Project>
