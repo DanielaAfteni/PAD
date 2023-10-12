@@ -1,6 +1,7 @@
 using LogConsumer.Configurations;
 using LogConsumer.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Prometheus;
 using RabbitMQUtils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,11 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 services.AddGrpc();
+services.AddHealthChecks();
 services.Configure<DatabaseSettings>(configuration.GetSection("MongoDatabase"));
 services.Configure<RabbitMqOptions>(x => x.ConnectionString = configuration.GetConnectionString("RabbitMQ")!);
 services.Configure<ConsumerOptions>(configuration.GetSection("ConsumerOptions"));
 services.AddSingleton<LogService>();
 services.AddHostedService<RabbitLogConsumer>();
 var app = builder.Build();
+
+
+app.UseMetricServer("/metrics");
+app.UseHealthChecks("/health");
+
 
 app.Run();
