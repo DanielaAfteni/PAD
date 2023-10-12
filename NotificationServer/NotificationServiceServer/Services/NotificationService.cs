@@ -1,8 +1,6 @@
 ﻿using RabbitMQUtils;
 using Grpc.Core;
 using System.Text.Json;
-using Grpc.Net.Client;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NotificationServiceServer.Services
 {
