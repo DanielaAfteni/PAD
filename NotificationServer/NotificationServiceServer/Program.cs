@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var services = builder.Services;
 var configuration = builder.Configuration;
-services.AddGrpc();
+services.AddGrpc().AddJsonTranscoding();
 services.Configure<RabbitMqOptions>(x => x.ConnectionString = configuration.GetConnectionString("RabbitMQ")!);
 services.AddSingleton<RabbitMqPublisher>();
 services.AddHealthChecks();

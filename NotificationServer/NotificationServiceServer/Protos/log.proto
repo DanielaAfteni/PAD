@@ -3,11 +3,17 @@ syntax = "proto3";
 option csharp_namespace = "NotificationServiceServer";
 
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 package log;
 // The greeting service definition.
 service Notification {
   // Sends a greeting
-  rpc SaveLogToRabbit (LogRequest) returns (LogReply);
+  rpc SaveLogToRabbit (LogRequest) returns (LogReply) {
+	  option(google.api.http) = {
+		  post: "/save"
+		  body: "*"
+	  };
+  };
 }
 
 message LogRequest {

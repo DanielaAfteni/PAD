@@ -1,6 +1,5 @@
 using LogConsumer.Configurations;
 using LogConsumer.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Prometheus;
 using RabbitMQUtils;
 
