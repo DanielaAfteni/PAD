@@ -309,18 +309,21 @@ def tts():
         current_time = datetime.now()
         
 
-        # Create a gTTS object
-        tts = gTTS(new_tts)
+        # # Create a gTTS object
+        # tts = gTTS(new_tts)
         
-        # Save the generated speech as a temporary file
-        tts.save('output.mp3')
+        # # Save the generated speech as a temporary file
+        # tts.save('output.mp3')
         
-        # Send the file to the user for download
-        # send_file('output.mp3', as_attachment=True)
-        output_file_path = os.path.join(os.getcwd(), 'output.mp3')
-        send_file(output_file_path, as_attachment=True)
+        # # Send the file to the user for download
+        # # send_file('output.mp3', as_attachment=True)
+        # output_file_path = os.path.join(os.getcwd(), 'output.mp3')
+        # with app.app_context():
+        #     send_file(output_file_path, as_attachment=True)
+        #     # os.remove(output_file_path)  # Delete the temporary file
+        # # send_file(output_file_path, as_attachment=True)
 
-        print(new_tts)
+        # print(new_tts)
 
         try:
             new_obj = run_with_timeout(
@@ -347,6 +350,7 @@ def stt():
 
         current_time = datetime.now()
         
+        new_stt = "The stt: " + new_stt
         print(new_stt)
 
         try:
