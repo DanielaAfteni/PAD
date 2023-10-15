@@ -26,7 +26,7 @@ namespace LogConsumer.Services
         {
             _logger = logger;
             _consumerOptions = consumerOptions.Value;
-            var factory = new ConnectionFactory { HostName = "localhost" };
+            var factory = new ConnectionFactory { Uri = new Uri(options.Value.ConnectionString)};
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.BasicQos(_consumerOptions.PrefetchSize, _consumerOptions.PrefetchCount, false);
