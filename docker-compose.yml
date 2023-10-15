@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    hostname: my-mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - mynetwork
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: bunny
+    hostname: my-rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - mynetwork
+networks:
+  mynetwork:

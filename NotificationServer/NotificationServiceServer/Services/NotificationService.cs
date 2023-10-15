@@ -20,7 +20,7 @@ namespace NotificationServiceServer.Services
             {
                 var stringRequest = JsonSerializer.Serialize(request);
                 //Thread.Sleep(2000);
-                _rabbitMqPublisher.SendQueueAsyncAck("Notifications", stringRequest);
+                    _rabbitMqPublisher.SendQueueAsyncAck("Notifications", stringRequest);
                 return Task.FromResult(new LogReply { IsSuccess = true });
             }
             catch(Exception ex) { 

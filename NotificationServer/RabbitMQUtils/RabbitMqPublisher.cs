@@ -14,13 +14,9 @@ namespace RabbitMQUtils
 
         public RabbitMqPublisher(IOptions<RabbitMqOptions> options)
         {
-            //factory = new ConnectionFactory
-            //{
-            //    Uri = new Uri(options.Value.ConnectionString!)
-            //};
             factory = new ConnectionFactory
             {
-                HostName = "localhost"
+                Uri = new Uri(options.Value.ConnectionString!)
             };
             _channelManager = new ChannelManager(factory,_channelLimit,_processingLimit);
         }
