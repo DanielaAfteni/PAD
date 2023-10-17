@@ -26,7 +26,7 @@ namespace LogConsumer.Services
         {
             _logger = logger;
             _consumerOptions = consumerOptions.Value;
-            var factory = new ConnectionFactory { HostName = "localhost" };
+            var factory = new ConnectionFactory { Uri = new Uri(options.Value.ConnectionString)};
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             _channel.BasicQos(_consumerOptions.PrefetchSize, _consumerOptions.PrefetchCount, false);
@@ -38,12 +38,14 @@ namespace LogConsumer.Services
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Started Background Task!");
             stoppingToken.ThrowIfCancellationRequested();
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += async (ch, ea) =>
             {
                 try
                 {
+                    _logger.LogInformation("Received Message");
                     var content = Encoding.UTF8.GetString(ea.Body.ToArray());
                     var logRequest = JsonSerializer.Deserialize<LogRequest>(content) ?? throw new Exception("LogRequest was null");
                     var serviceLog = new ServiceLog
