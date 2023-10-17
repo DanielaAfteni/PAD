@@ -23,5 +23,12 @@ var app = builder.Build();
 app.UseMetricServer("/metrics");
 app.UseHealthChecks("/health");
 
+try
+{
+    app.Run();
 
-app.Run();
+}
+catch(Exception ex)
+{
+    Console.WriteLine(ex.ToString());
+}
