@@ -19,5 +19,20 @@ services:
       - "5672:5672"
     networks:
       - mynetwork
+  notification-server:
+    image: notification-server 
+    ports:
+      - "5297:80"
+      - "7082:443"
+    networks:
+      - mynetwork
+    container_name: notification-server-container
+  log-consumer:
+    image: log-consumer
+    ports:
+      - "5216:80"
+      - "7192:443"
+    networks:
+      - mynetwork
 networks:
   mynetwork:
