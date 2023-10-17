@@ -60,6 +60,7 @@ namespace LogConsumer.Services
                 catch (Exception ex)
                 {
                     _logger.LogError("Couldn't save log\n {error}", ex);
+                    _channel.BasicNack(ea.DeliveryTag, false,false);
                 }
             };
             _channel.BasicConsume(_consumerOptions.ChannelTarget, false, consumer);
