@@ -164,7 +164,7 @@ def chat():
 
             user_list.append(new_obj)
             # Call the gRPC function to send log request
-            send_log_request(completions, "Chat GPT Service")
+            send_log_request("Chat GPT Service", completions)
             return jsonify({"response": completions}), 200
             # return jsonify(user_list), 201
         except TimeoutError:
