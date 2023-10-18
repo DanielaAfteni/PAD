@@ -14,10 +14,10 @@ data_stt = {
 }
 
 # Send data to /tts endpoint
-response_tts = requests.post('http://127.0.0.1:80/tts', data=data_tts)
+response_tts = requests.post('http://127.0.0.1:8080/tts', data=data_tts)
 
 # Send data to /stt endpoint
-response_stt = requests.post('http://127.0.0.1:80/stt', data=data_stt)
+response_stt = requests.post('http://127.0.0.1:8080/stt', data=data_stt)
 
 # Print the responses
 print("Response from /tts endpoint:")

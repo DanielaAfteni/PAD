@@ -306,22 +306,45 @@ def tts():
         new_phrase = request.form['phrase']
         new_tts = request.form['tts']
 
-        current_time = datetime.now()
-        
+        new_tts = "Text to speech: " + new_tts
 
-        # # Create a gTTS object
+        current_time = datetime.now()
+
         # tts = gTTS(new_tts)
-        
-        # # Save the generated speech as a temporary file
-        # tts.save('output.mp3')
-        
-        # # Send the file to the user for download
-        # # send_file('output.mp3', as_attachment=True)
-        # output_file_path = os.path.join(os.getcwd(), 'output.mp3')
+
+        # # Define the folder where you want to save the output file
+        # audio_folder_name = "audio_folder"
+
+        # # Make sure the 'audio_folder' exists, create it if it doesn't
+        # if not os.path.exists(audio_folder_name):
+        #     os.mkdir(audio_folder_name)
+
+        # # Save the generated speech as an MP3 file in the 'audio_folder'
+        # output_file_path = os.path.join(audio_folder_name, 'output.mp3')
+        # tts.save(output_file_path)
+
         # with app.app_context():
         #     send_file(output_file_path, as_attachment=True)
-        #     # os.remove(output_file_path)  # Delete the temporary file
-        # # send_file(output_file_path, as_attachment=True)
+
+
+
+
+
+        
+
+        # Create a gTTS object
+        tts = gTTS(new_tts)
+        
+        # Save the generated speech as a temporary file
+        tts.save('output.mp3')
+        
+        # Send the file to the user for download
+        # send_file('output.mp3', as_attachment=True)
+        output_file_path = os.path.join(os.getcwd(), 'output.mp3')
+        with app.app_context():
+            send_file(output_file_path, as_attachment=True)
+            # os.remove(output_file_path)  # Delete the temporary file
+        # send_file(output_file_path, as_attachment=True)
 
         # print(new_tts)
 
@@ -335,7 +358,7 @@ def tts():
             )
 
             user_list.append(new_obj)
-            return jsonify(user_list), 201
+            return jsonify({"response": new_tts}), 201
         except TimeoutError:
             return jsonify({"error": "Request timed out"}), 500
         
@@ -392,7 +415,7 @@ if __name__ == '__main__':
     health_check_thread.daemon = True
     health_check_thread.start()
 
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
 
 
 

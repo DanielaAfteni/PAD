@@ -1,0 +1,55 @@
+// // syntax = "proto3";
+
+// // package notifications;
+
+// // message ActivityNotification {
+// //   string activity_type = 1;
+// //   string message = 2;
+// // }
+
+// syntax = "proto3";
+
+// // option py_namespace = "chat_gpt_service";
+
+// import "google/protobuf/timestamp.proto";
+// package chatgpt;
+// // The greeting service definition.
+// service NotificationChatGpt {
+//   // Sends a greeting
+//   rpc SaveLogToRabbitChatGpt (LogRequestChatGpt) returns (LogReplyChatGpt);
+// }
+
+// message LogRequestChatGpt {
+//   string serviceName = 1;
+//   string serviceMessage = 2;
+//   google.protobuf.Timestamp time = 3;
+// }
+
+// // The response message containing the greetings.
+// message LogReplyChatGpt {
+//   bool isSuccess = 1;
+// }
+
+
+syntax = "proto3";
+
+// option csharp_namespace = "NotificationServiceServer";
+
+import "google/protobuf/timestamp.proto";
+package log;
+// The greeting service definition.
+service Notification {
+  // Sends a greeting
+  rpc SaveLogToRabbit (LogRequest) returns (LogReply);
+}
+
+message LogRequest {
+  string serviceName = 1;
+  string serviceMessage = 2;
+  google.protobuf.Timestamp time = 3;
+}
+
+// The response message containing the greetings.
+message LogReply {
+  bool isSuccess = 1;
+}

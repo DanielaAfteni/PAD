@@ -7,6 +7,11 @@ import os
 from dotenv import load_dotenv
 import requests
 import sqlite3
+import grpc
+import log_pb2
+import log_pb2_grpc
+import google.protobuf.timestamp_pb2
+
 
 # connection = sqlite3.connect("config.db")
 # cursor = connection.cursor()
@@ -24,7 +29,6 @@ app = Flask(__name__)
 
 user_list = []
 service_status = "Healthy"  # Initial status
-
 
 # Limit the number of concurrent tasks to 10
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
@@ -61,8 +65,42 @@ def create_new_obj(new_user_email, new_phrase, current_time):
         "when_received": str(current_time)
     }
 
+
+def send_log_request(serviceName, serviceMessage):
+    # Create a gRPC channel to connect to the server
+    channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
+
+    # Create a gRPC stub
+    stub = log_pb2_grpc.NotificationStub(channel)
+
+    current_time_seconds = int(time.time())
+
+    # Get the current time in nanoseconds
+    current_time_nanoseconds = int(time.time_ns())
+
+    # Create a LogRequest message
+    log_request = log_pb2.LogRequest(
+        serviceName=serviceName,
+        serviceMessage=serviceMessage,
+        time= google.protobuf.timestamp_pb2.Timestamp(
+            nanos=current_time_nanoseconds % 1_000_000_000,  # Ensure nanoseconds are within the valid range
+            seconds=current_time_seconds
+        )
+    )
+
+    # Send the LogRequest to the server
+    response = stub.SaveLogToRabbit(log_request)
+
+    # Handle the response
+    if response.isSuccess:
+        print("Request was successful on the port 5297.")
+    else:
+        print("Request failed on the port 5297.")
+
+
+
 @app.route('/chat', methods=['POST'])
-def tts():
+def chat():
     if request.method == 'POST':
         new_user_email = request.form['user_email']
         new_phrase = request.form['phrase']
@@ -70,7 +108,7 @@ def tts():
 
         current_time = datetime.now()
         
-        print(new_question)
+        # print(new_question)
         
         
         # Set your OpenAI API key
@@ -111,9 +149,9 @@ def tts():
         if response.status_code == 200:
             data = response.json()
             completions = data["choices"][0]["message"]["content"]
-            print(completions)
-        else:
-            print("Request failed with status code:", response.status_code)
+            # print(completions)
+        # else:
+        #     print("Request failed with status code:", response.status_code)
 
         try:
             new_obj = run_with_timeout(
@@ -125,7 +163,10 @@ def tts():
             )
 
             user_list.append(new_obj)
-            return jsonify(user_list), 201
+            # Call the gRPC function to send log request
+            send_log_request(completions, "Chat GPT Service")
+            return jsonify({"response": completions}), 200
+            # return jsonify(user_list), 201
         except TimeoutError:
             return jsonify({"error": "Request timed out"}), 500
         
