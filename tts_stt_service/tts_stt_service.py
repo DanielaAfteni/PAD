@@ -256,6 +256,10 @@ from gtts import gTTS
 import os
 import speech_recognition as sr
 from pydub import AudioSegment
+import grpc
+import log_pb2
+import log_pb2_grpc
+import google.protobuf.timestamp_pb2
 
 
 app = Flask(__name__)
@@ -299,6 +303,40 @@ def create_new_obj(new_user_email, new_phrase, current_time):
         "when_received": str(current_time)
     }
 
+
+def send_log_request(serviceName, serviceMessage):
+    # Create a gRPC channel to connect to the server
+    channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
+
+    # Create a gRPC stub
+    stub = log_pb2_grpc.NotificationStub(channel)
+
+    current_time_seconds = int(time.time())
+
+    # Get the current time in nanoseconds
+    current_time_nanoseconds = int(time.time_ns())
+
+    # Create a LogRequest message
+    log_request = log_pb2.LogRequest(
+        serviceName=serviceName,
+        serviceMessage=serviceMessage,
+        time= google.protobuf.timestamp_pb2.Timestamp(
+            nanos=current_time_nanoseconds % 1_000_000_000,  # Ensure nanoseconds are within the valid range
+            seconds=current_time_seconds
+        )
+    )
+
+    # Send the LogRequest to the server
+    response = stub.SaveLogToRabbit(log_request)
+
+    # Handle the response
+    if response.isSuccess:
+        print("Request was successful on the port 5297.")
+    else:
+        print("Request failed on the port 5297.")
+
+
+
 @app.route('/tts', methods=['POST'])
 def tts():
     if request.method == 'POST':
@@ -332,21 +370,21 @@ def tts():
 
         
 
-        # Create a gTTS object
-        tts = gTTS(new_tts)
+        # # Create a gTTS object
+        # tts = gTTS(new_tts)
         
-        # Save the generated speech as a temporary file
-        tts.save('output.mp3')
+        # # Save the generated speech as a temporary file
+        # tts.save('output.mp3')
         
-        # Send the file to the user for download
-        # send_file('output.mp3', as_attachment=True)
-        output_file_path = os.path.join(os.getcwd(), 'output.mp3')
-        with app.app_context():
-            send_file(output_file_path, as_attachment=True)
-            # os.remove(output_file_path)  # Delete the temporary file
-        # send_file(output_file_path, as_attachment=True)
+        # # Send the file to the user for download
+        # # send_file('output.mp3', as_attachment=True)
+        # output_file_path = os.path.join(os.getcwd(), 'output.mp3')
+        # with app.app_context():
+        #     send_file(output_file_path, as_attachment=True)
+        #     # os.remove(output_file_path)  # Delete the temporary file
+        # # send_file(output_file_path, as_attachment=True)
 
-        # print(new_tts)
+        # # print(new_tts)
 
         try:
             new_obj = run_with_timeout(
@@ -358,6 +396,7 @@ def tts():
             )
 
             user_list.append(new_obj)
+            send_log_request(new_tts, "Text to Speech Service")
             return jsonify({"response": new_tts}), 201
         except TimeoutError:
             return jsonify({"error": "Request timed out"}), 500
@@ -371,10 +410,11 @@ def stt():
         new_phrase = request.form['phrase']
         new_stt = request.form['stt']
 
+        new_stt = "Speech to text: " + new_stt
+
         current_time = datetime.now()
         
-        new_stt = "The stt: " + new_stt
-        print(new_stt)
+        # print(new_stt)
 
         try:
             new_obj = run_with_timeout(
@@ -386,7 +426,8 @@ def stt():
             )
 
             user_list.append(new_obj)
-            return jsonify(user_list), 201
+            send_log_request(new_stt, "Speech to Text Service")
+            return jsonify({"response": new_stt}), 201
         except TimeoutError:
             return jsonify({"error": "Request timed out"}), 500
         
