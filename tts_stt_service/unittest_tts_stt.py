@@ -1,5 +1,5 @@
 import unittest
-from tts_stt_service.tts_stt_service import app  # Import your Flask app from the correct module
+from tts_stt_service import app  # Import your Flask app from the correct module
 from flask import Flask
 
 class TTSSTTServiceTestCase(unittest.TestCase):
