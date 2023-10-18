@@ -12,6 +12,7 @@ import grpc
 import log_pb2
 import log_pb2_grpc
 import google.protobuf.timestamp_pb2
+import psutil
 
 
 app = Flask(__name__)
@@ -191,15 +192,41 @@ def get_status():
     global service_status
     return jsonify({"status": service_status})
 
+def is_service_healthy():
+    # Check system resource usage
+    try:
+        # Check CPU usage
+        cpu_usage = psutil.cpu_percent(interval=1)  # Monitor CPU usage for 1 second
+        if cpu_usage < 80:
+            # CPU usage is within acceptable limits
+            pass
+        else:
+            # CPU usage is high, consider service as unhealthy
+            return False
+
+        # Check memory usage
+        memory_usage = psutil.virtual_memory().percent
+        if memory_usage < 90:
+            # Memory usage is within acceptable limits
+            pass
+        else:
+            # Memory usage is high, consider service as unhealthy
+            return False
+
+        # If all checks pass, consider the service as healthy
+        return True
+    except Exception as e:
+        # Handle exceptions and consider the service as unhealthy
+        return False
+
+# In the check_health function, set service_status based on health checks
 def check_health():
     global service_status
     while True:
-        # Simulate some health check logic here
-        # For demonstration purposes, we'll just toggle between "Healthy" and "Unhealthy"
-        if service_status == "Healthy":
-            service_status = "Unhealthy"
-        else:
+        if is_service_healthy():
             service_status = "Healthy"
+        else:
+            service_status = "Unhealthy"
         time.sleep(10)  # Check health every 10 seconds
 
 if __name__ == '__main__':
