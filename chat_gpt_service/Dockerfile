@@ -1,7 +1,15 @@
-FROM python 
+FROM python:3.10
 
-WORKDIR /app1
+# RUN python -m pip install --upgrade pip
 
-COPY . /app1
+# Set the working directory in the container
+WORKDIR /app
 
-CMD ["python3", "chat_gpt_service.py"]
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install -r requirements.txt
+
+# Define the command to run your application
+CMD ["python", "chat_gpt_service.py"]

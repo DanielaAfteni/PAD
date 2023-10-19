@@ -6,7 +6,6 @@ import concurrent.futures  # Import the concurrent.futures module
 import os
 from dotenv import load_dotenv
 import requests
-import sqlite3
 import grpc
 import log_pb2
 import log_pb2_grpc
