@@ -7,7 +7,6 @@ namespace LogConsumer.Services
 {
     public class LogService
     {
-        private readonly ILogger _logger;
         private readonly IMongoCollection<ServiceLog> _serviceLogCollection;
         public LogService(IOptions<DatabaseSettings> databaseSettings)
         {
