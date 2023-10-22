@@ -1,0 +1,7 @@
+{
+    "service1": {
+      "serviceName": "Chat GPT Service",
+      "ports": [5000, 5001, 5002, 5003, 5004, 5005]
+    }
+  }
+  

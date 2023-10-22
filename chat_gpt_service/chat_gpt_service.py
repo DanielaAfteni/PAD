@@ -11,7 +11,8 @@ import log_pb2
 import log_pb2_grpc
 import google.protobuf.timestamp_pb2
 import psutil
-
+import json
+import random
 
 # connection = sqlite3.connect("config.db")
 # cursor = connection.cursor()
@@ -27,11 +28,38 @@ import psutil
 
 app = Flask(__name__)
 
+
+# Define a critical load threshold (e.g., 60 pings per second)
+CRITICAL_LOAD_THRESHOLD = 60
+pings = 0
+
 user_list = []
 service_status = "Healthy"  # Initial status
 
 # Limit the number of concurrent tasks to 10
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+
+def reset_counter():
+    while True:
+        global pings
+        time.sleep(1)
+        pings = 0
+        # print("Resetting counter")
+        # print(pings)
+
+
+def check_load():
+    global pings
+    if pings >= CRITICAL_LOAD_THRESHOLD:
+        print("ALERT: Health Monitoring and Alerts")
+
+
+def send_alert(alert_message):
+    # Implement the logic to send an alert, for example, send an email or push notification
+    # You can use third-party libraries for sending alerts
+
+    print("ALERT:", alert_message)
+
 
 def run_with_timeout(func, timeout, *args, **kwargs):
     result = None
@@ -58,10 +86,9 @@ def run_with_timeout(func, timeout, *args, **kwargs):
 
     return result
 
-def create_new_obj(new_user_email, new_phrase, current_time):
+def create_new_obj(new_user_email, current_time):
     return {
         "user_email": new_user_email,
-        "phrase": new_phrase,
         "when_received": str(current_time)
     }
 
@@ -102,9 +129,14 @@ def send_log_request(serviceName, serviceMessage):
 @app.route('/chat', methods=['POST'])
 def chat():
     if request.method == 'POST':
+        global pings
+        pings += 1
+        # print("Request received")
+        # print(pings)
+        check_load()
         new_user_email = request.form['user_email']
-        new_phrase = request.form['phrase']
         new_question = request.form['question']
+        
 
         current_time = datetime.now()
         
@@ -158,13 +190,13 @@ def chat():
                 create_new_obj,
                 timeout=10,  # Set a timeout of 10 seconds
                 new_user_email=new_user_email,
-                new_phrase=new_phrase,
                 current_time=current_time
             )
 
             user_list.append(new_obj)
             # Call the gRPC function to send log request
-            send_log_request("Chat GPT Service", completions)
+            current_endpoint = request.endpoint
+            send_log_request("Chat GPT Service", f"{current_endpoint} - Endpoint from Chat GPT Service was successful")
             return jsonify({"response": completions}), 200
             # return jsonify(user_list), 201
         except TimeoutError:
@@ -253,9 +285,72 @@ if __name__ == '__main__':
     health_check_thread.daemon = True
     health_check_thread.start()
 
+    reset_thread = threading.Thread(target=reset_counter, daemon=True)
+
+    reset_thread.start()
+    # reset_thread.join()
+
     
 
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+
+# def load_service_config():
+#     # Load service configuration from a JSON file
+#     with open('replica.json', 'r') as json_file:
+#         services_config = json.load(json_file)
+#     return services_config
+
+# def start_services(services_config):
+#     for service_name, service_info in services_config.items():
+#         service_port = random.choice(service_info['ports'])
+#         print(f"Starting service '{service_name}' on port {service_port}...")
+#         # Start your service with the specified service_name and service_port
+#         # You can create a new Flask app and run it on the specified port
+#         service_app = Flask(__name__)
+#         service_app.run(host="0.0.0.0", port=service_port, debug=True)
+
+# def start_server(service_name, port):
+#     app.run(host="0.0.0.0", port=port, debug=True)
+
+# def start_services(service_config):
+#     service_name = list(service_config.keys())[0]  # Get the service name
+#     ports = service_config[service_name].get("ports")
+#     # for i in range(2):
+#     if ports:
+#         selected_port = random.choice(ports)
+#         print(f"Starting {service_name} on port {selected_port}")
+#         start_server(service_name, selected_port)
+
+# def load_service_config():
+#     with open('chat_gpt_service\service.json', 'r') as json_file:
+#         service_config = json.load(json_file)
+#         return service_config
+
+# if __name__ == '__main__':
+#     health_check_thread = threading.Thread(target=check_health)
+#     health_check_thread.daemon = True
+#     health_check_thread.start()
+
+#     reset_thread = threading.Thread(target=reset_counter, daemon=True)
+#     reset_thread.start()
+
+#     # Load service configuration
+#     services_config = load_service_config()
+
+#     services = []
+
+#     # Start services based on the configuration
+#     for i in range(2):
+#         # start_services(services_config)
+
+#         service_thread = threading.Thread(target=start_services(services_config), daemon=True)
+#         services.append(service_thread)
+#     for service in services:
+#         service.start()
+        
+
 
 
 
