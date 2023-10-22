@@ -13,6 +13,8 @@ import google.protobuf.timestamp_pb2
 import psutil
 import json
 import random
+import psycopg2
+
 
 # connection = sqlite3.connect("config.db")
 # cursor = connection.cursor()
@@ -128,6 +130,7 @@ def send_log_request(serviceName, serviceMessage):
 
 @app.route('/chat', methods=['POST'])
 def chat():
+    
     if request.method == 'POST':
         global pings
         pings += 1
@@ -146,8 +149,12 @@ def chat():
         # time.sleep(3)
         if timeout_event.is_set():
             print("Request timed out.")
-        new_user_email = request.form['user_email']
-        new_question = request.form['question']
+        # new_user_email = request.form['user_email']
+        # new_question = request.form['question']
+
+        new_user_email = request.json.get('user_email')  # Access data as JSON
+        new_question = request.json.get('question')  # Access data as JSON
+
         
 
         current_time = datetime.now()

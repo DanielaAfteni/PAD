@@ -10,6 +10,12 @@ COPY . /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
+# COPY requirements.txt .
+# RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+EXPOSE 5000
+
+ENV NAME chat_service_1
 
 # Define the command to run your application
 CMD ["python", "chat_gpt_service.py"]
