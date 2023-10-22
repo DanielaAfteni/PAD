@@ -134,6 +134,18 @@ def chat():
         # print("Request received")
         # print(pings)
         check_load()
+        timeout_seconds = 2
+        timeout_event = threading.Event()
+
+        def timeout_handler():
+            timeout_event.set()
+            # print("Timer is set.")
+
+        timer_thread = threading.Timer(timeout_seconds, timeout_handler)
+        timer_thread.start()
+        # time.sleep(3)
+        if timeout_event.is_set():
+            print("Request timed out.")
         new_user_email = request.form['user_email']
         new_question = request.form['question']
         
@@ -176,6 +188,8 @@ def chat():
                 "temperature": 0.7
             }
         )
+        if timeout_event.is_set():
+            print("Request timed out.")
 
         # Parse and print the response
         if response.status_code == 200:
@@ -192,6 +206,8 @@ def chat():
                 new_user_email=new_user_email,
                 current_time=current_time
             )
+            if timeout_event.is_set():
+                print("Request timed out.")
 
             user_list.append(new_obj)
             # Call the gRPC function to send log request
@@ -207,6 +223,18 @@ def chat():
 
 @app.route('/status', methods=['GET'])
 def get_status():
+    timeout_seconds = 2
+    timeout_event = threading.Event()
+
+    def timeout_handler():
+        timeout_event.set()
+        # print("Timer is set.")
+
+    timer_thread = threading.Timer(timeout_seconds, timeout_handler)
+    timer_thread.start()
+    # time.sleep(3)
+    if timeout_event.is_set():
+        print("Request timed out.")
     global service_status
     return jsonify({"status": service_status})
 
