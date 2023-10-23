@@ -16,7 +16,7 @@ class Neo4jDB:
 
     def create_node(self, name):
         with self._driver.session() as session:
-            session.write_transaction(self._create_node, name)
+            session.execute_write(self._create_node, name)
 
     @staticmethod
     def _create_node(tx, name):
@@ -38,6 +38,7 @@ def create_node():
     # Check if the data is in the cache
     if name in cache:
         result = cache[name]
+        print("The data Exists")
     else:
         # If not in cache, create the node and add to the cache
         db.create_node(name)
@@ -47,4 +48,4 @@ def create_node():
     return jsonify(result)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=4000, debug=True)
