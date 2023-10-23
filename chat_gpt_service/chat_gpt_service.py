@@ -38,6 +38,16 @@ pings = 0
 user_list = []
 service_status = "Healthy"  # Initial status
 
+
+# create_table_query = """
+# CREATE TABLE IF NOT EXISTS my_table (
+#     id serial PRIMARY KEY,
+#     new_question VARCHAR(255) UNIQUE,
+#     new_question_description VARCHAR(255)
+# );
+# """
+
+
 # Limit the number of concurrent tasks to 10
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 
@@ -97,7 +107,7 @@ def create_new_obj(new_user_email, current_time):
 
 def send_log_request(serviceName, serviceMessage):
     # Create a gRPC channel to connect to the server
-    channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
+    channel = grpc.insecure_channel('192.168.2.150:5297')  # Replace with the actual server address
 
     # Create a gRPC stub
     stub = log_pb2_grpc.NotificationStub(channel)
@@ -137,7 +147,7 @@ def chat():
         # print("Request received")
         # print(pings)
         check_load()
-        timeout_seconds = 2
+        timeout_seconds = 5
         timeout_event = threading.Event()
 
         def timeout_handler():
@@ -154,7 +164,73 @@ def chat():
 
         new_user_email = request.json.get('user_email')  # Access data as JSON
         new_question = request.json.get('question')  # Access data as JSON
+        new_question_description = "new_question_description_1"
 
+        try:
+            connection = psycopg2.connect(
+                user="postgres",
+                password="password",
+                host="localhost",
+                # host="192.168.2.150",
+                port="5433",
+                database="postgres-db"
+            )
+
+            cursor = connection.cursor()
+
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS my_table (
+                id serial PRIMARY KEY,
+                new_question VARCHAR(255) UNIQUE,
+                new_question_description VARCHAR(255)
+            );
+            """
+
+            cursor.execute(create_table_query)
+            connection.commit()
+            # cursor.execute("TRUNCATE my_table;")
+            # connection.commit()
+            # print("Table 'my_table' has been cleared.")
+
+            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('my_table',))
+            table_exists = cursor.fetchone()[0]
+
+            if table_exists:
+                print("Table 'my_table' exists.")
+            else:
+                print("Table 'my_table' does not exist. You may need to create it.")
+
+            
+
+            # Check if 'new_question' exists in the table
+            cursor.execute("SELECT new_question_description FROM my_table WHERE new_question = %s", (new_question,))
+            existing_description = cursor.fetchone()
+            if existing_description is not None:
+                print("It EXISTS")
+                new_question_description = existing_description[0]
+            else:
+                print("It DOES NOT EXIST")
+                # # If 'new_question' doesn't exist, insert it and its description
+                # insert_data_query = "INSERT INTO my_table (new_question, new_question_description) VALUES (%s, %s) RETURNING new_question_description;"
+                # data_to_insert = (new_question, "Default Description")  # You can set your own default description
+                # cursor.execute(insert_data_query, data_to_insert)
+                # connection.commit()
+                # new_question_description = "Default Description"  # Use the default description
+                # If 'new_question' doesn't exist, insert it and its description
+                insert_data_query = "INSERT INTO my_table (new_question, new_question_description) VALUES (%s, %s) RETURNING new_question_description;"
+                data_to_insert = (new_question, new_question_description)  # You can set your own default description
+                cursor.execute(insert_data_query, data_to_insert)
+                connection.commit()
+                # new_question_description = "Default Description"  # Use the default description
+
+
+        except (Exception, psycopg2.Error) as error:
+            print("Error while connecting to PostgreSQL", error)
+        finally:
+            if connection:
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
         
 
         current_time = datetime.now()
@@ -219,7 +295,8 @@ def chat():
             user_list.append(new_obj)
             # Call the gRPC function to send log request
             current_endpoint = request.endpoint
-            send_log_request("Chat GPT Service", f"{current_endpoint} - Endpoint from Chat GPT Service was successful")
+            # send_log_request("Chat GPT Service", f"{current_endpoint} - Endpoint from Chat GPT Service was successful")
+            completions = new_question_description
             return jsonify({"response": completions}), 200
             # return jsonify(user_list), 201
         except TimeoutError:
