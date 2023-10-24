@@ -107,7 +107,7 @@ def create_new_obj(new_user_email, current_time):
 
 def send_log_request(serviceName, serviceMessage):
     # Create a gRPC channel to connect to the server
-    channel = grpc.insecure_channel('192.168.2.150:5297')  # Replace with the actual server address
+    channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
 
     # Create a gRPC stub
     stub = log_pb2_grpc.NotificationStub(channel)
@@ -163,8 +163,8 @@ def chat():
         # new_question = request.form['question']
 
         new_user_email = request.json.get('user_email')  # Access data as JSON
-        new_question = request.json.get('question')  # Access data as JSON
-        new_question_description = "new_question_description_1"
+        new_question_command = request.json.get('question')  # Access data as JSON
+        new_question_prompt = ""
 
         try:
             connection = psycopg2.connect(
@@ -181,8 +181,8 @@ def chat():
             create_table_query = """
             CREATE TABLE IF NOT EXISTS my_table (
                 id serial PRIMARY KEY,
-                new_question VARCHAR(255) UNIQUE,
-                new_question_description VARCHAR(255)
+                new_question_command VARCHAR(255) UNIQUE,
+                new_question_prompt VARCHAR(255)
             );
             """
 
@@ -203,25 +203,25 @@ def chat():
             
 
             # Check if 'new_question' exists in the table
-            cursor.execute("SELECT new_question_description FROM my_table WHERE new_question = %s", (new_question,))
+            cursor.execute("SELECT new_question_prompt FROM my_table WHERE new_question_command = %s", (new_question_command,))
             existing_description = cursor.fetchone()
             if existing_description is not None:
                 print("It EXISTS")
-                new_question_description = existing_description[0]
+                new_question_prompt = existing_description[0]
             else:
                 print("It DOES NOT EXIST")
                 # # If 'new_question' doesn't exist, insert it and its description
-                # insert_data_query = "INSERT INTO my_table (new_question, new_question_description) VALUES (%s, %s) RETURNING new_question_description;"
+                # insert_data_query = "INSERT INTO my_table (new_question, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
                 # data_to_insert = (new_question, "Default Description")  # You can set your own default description
                 # cursor.execute(insert_data_query, data_to_insert)
                 # connection.commit()
-                # new_question_description = "Default Description"  # Use the default description
+                # new_question_prompt = "Default Description"  # Use the default description
                 # If 'new_question' doesn't exist, insert it and its description
-                insert_data_query = "INSERT INTO my_table (new_question, new_question_description) VALUES (%s, %s) RETURNING new_question_description;"
-                data_to_insert = (new_question, new_question_description)  # You can set your own default description
+                insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
+                data_to_insert = (new_question_command, new_question_prompt)  # You can set your own default description
                 cursor.execute(insert_data_query, data_to_insert)
                 connection.commit()
-                # new_question_description = "Default Description"  # Use the default description
+                # new_question_prompt = "Default Description"  # Use the default description
 
 
         except (Exception, psycopg2.Error) as error:
@@ -257,7 +257,7 @@ def chat():
         api_endpoint = "https://api.openai.com/v1/chat/completions"
 
         # Define the prompt you want to send to the model
-        prompt = new_question
+        prompt = new_question_prompt
 
         # Send a POST request to the API
         response = requests.post(
@@ -295,8 +295,8 @@ def chat():
             user_list.append(new_obj)
             # Call the gRPC function to send log request
             current_endpoint = request.endpoint
-            # send_log_request("Chat GPT Service", f"{current_endpoint} - Endpoint from Chat GPT Service was successful")
-            completions = new_question_description
+            send_log_request("Chat GPT Service", f"{current_endpoint} - Endpoint from Chat GPT Service was successful")
+            # completions = new_question_prompt
             return jsonify({"response": completions}), 200
             # return jsonify(user_list), 201
         except TimeoutError:
@@ -304,6 +304,109 @@ def chat():
         
         return jsonify({}), 200
 
+
+@app.route('/addcommand', methods=['POST'])
+def command():
+    if request.method == 'POST':
+        global pings
+        pings += 1
+        # print("Request received")
+        # print(pings)
+        check_load()
+        timeout_seconds = 5
+        timeout_event = threading.Event()
+
+        def timeout_handler():
+            timeout_event.set()
+            # print("Timer is set.")
+
+        timer_thread = threading.Timer(timeout_seconds, timeout_handler)
+        timer_thread.start()
+        # time.sleep(3)
+        if timeout_event.is_set():
+            print("Request timed out.")
+        # new_user_email = request.form['user_email']
+        # new_question = request.form['question']
+
+        new_question_command = request.json.get('command')  # Access data as JSON
+        new_question_prompt = request.json.get('question')
+        # new_question_description = "new_question_description_1"
+
+        try:
+            connection = psycopg2.connect(
+                user="postgres",
+                password="password",
+                host="localhost",
+                # host="192.168.2.150",
+                port="5433",
+                database="postgres-db"
+            )
+
+            cursor = connection.cursor()
+            #         # SQL command to delete the table
+            # delete_table_query = f'DROP TABLE IF EXISTS my_table;'
+
+            # # Execute the SQL command to delete the table
+            # cursor.execute(delete_table_query)
+            # connection.commit()
+            # print("the table was deleted")
+
+            create_table_query = """
+            CREATE TABLE IF NOT EXISTS my_table (
+                id serial PRIMARY KEY,
+                new_question_command VARCHAR(255) UNIQUE,
+                new_question_prompt VARCHAR(255)
+            );
+            """
+
+            cursor.execute(create_table_query)
+            connection.commit()
+            # cursor.execute("TRUNCATE my_table;")
+            # connection.commit()
+            # print("Table 'my_table' has been cleared.")
+
+            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('my_table',))
+            table_exists = cursor.fetchone()[0]
+
+            if table_exists:
+                print("Table 'my_table' exists.")
+            else:
+                print("Table 'my_table' does not exist. You may need to create it.")
+
+            
+
+            # Check if 'new_question_command' exists in the table
+            cursor.execute("SELECT new_question_prompt FROM my_table WHERE new_question_command = %s", (new_question_command,))
+            existing_description = cursor.fetchone()
+            if existing_description is not None:
+                print("It EXISTS")
+                new_question_prompt = existing_description[0]
+            else:
+                print("It DOES NOT EXIST")
+                insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
+                data_to_insert = (new_question_command, new_question_prompt)
+                cursor.execute(insert_data_query, data_to_insert)
+                connection.commit()
+                print(f"Was created {new_question_command} command for Question prompt: {new_question_prompt}")
+
+
+        except (Exception, psycopg2.Error) as error:
+            print("Error while connecting to PostgreSQL", error)
+        finally:
+            if connection:
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+
+        return jsonify({"response": f"Was created {new_question_command} command for Question prompt: {new_question_prompt}"}), 200
+        
+        return jsonify({}), 200
+
+
+
+
+
+    
 
 @app.route('/status', methods=['GET'])
 def get_status():
