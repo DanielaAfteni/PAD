@@ -46,7 +46,8 @@ class Neo4jDB:
             return None
 
 # Set up the connection to the Neo4j database
-neo4j_uri = "bolt://localhost:7687"
+neo4j_uri = "bolt://neo4j-database"
+# neo4j_uri = "bolt://localhost:7687"
 neo4j_user = "neo4j"
 neo4j_password = "password"  # Replace with your actual password
 

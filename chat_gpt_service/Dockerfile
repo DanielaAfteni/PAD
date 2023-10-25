@@ -15,7 +15,5 @@ RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
-ENV NAME chat_gpt_service
-
 # Define the command to run your application
 CMD ["python", "chat_gpt_service.py"]

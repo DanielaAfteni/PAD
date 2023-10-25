@@ -15,7 +15,5 @@ RUN pip install -r requirements.txt
 
 EXPOSE 4000
 
-ENV NAME cache_service
-
 # Define the command to run your application
 CMD ["python", "cache_service.py"]

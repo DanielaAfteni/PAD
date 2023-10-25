@@ -107,7 +107,8 @@ def create_new_obj(new_user_email, current_time):
 
 def send_log_request(serviceName, serviceMessage):
     # Create a gRPC channel to connect to the server
-    channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
+    # channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
+    channel = grpc.insecure_channel('notification-server-container:5297')  # Replace with the actual server address
 
     # Create a gRPC stub
     stub = log_pb2_grpc.NotificationStub(channel)
@@ -170,9 +171,10 @@ def chat():
             connection = psycopg2.connect(
                 user="postgres",
                 password="password",
-                host="localhost",
+                # host="localhost",
+                host="postgres-database",
                 # host="192.168.2.150",
-                port="5433",
+                # port="5433",
                 database="postgres-db"
             )
 
@@ -210,6 +212,7 @@ def chat():
                 new_question_prompt = existing_description[0]
             else:
                 print("It DOES NOT EXIST")
+                new_question_prompt = new_question_command
                 # # If 'new_question' doesn't exist, insert it and its description
                 # insert_data_query = "INSERT INTO my_table (new_question, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
                 # data_to_insert = (new_question, "Default Description")  # You can set your own default description
@@ -217,11 +220,14 @@ def chat():
                 # connection.commit()
                 # new_question_prompt = "Default Description"  # Use the default description
                 # If 'new_question' doesn't exist, insert it and its description
-                insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
-                data_to_insert = (new_question_command, new_question_prompt)  # You can set your own default description
-                cursor.execute(insert_data_query, data_to_insert)
-                connection.commit()
+                # insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
+                # data_to_insert = (new_question_command, new_question_prompt)  # You can set your own default description
+                # cursor.execute(insert_data_query, data_to_insert)
+                # connection.commit()
                 # new_question_prompt = "Default Description"  # Use the default description
+                
+
+
 
 
         except (Exception, psycopg2.Error) as error:
@@ -336,9 +342,10 @@ def command():
             connection = psycopg2.connect(
                 user="postgres",
                 password="password",
-                host="localhost",
+                # host="localhost",
+                host="postgres-database",
                 # host="192.168.2.150",
-                port="5433",
+                # port="5433",
                 database="postgres-db"
             )
 
@@ -381,6 +388,7 @@ def command():
             if existing_description is not None:
                 print("It EXISTS")
                 new_question_prompt = existing_description[0]
+                print(f"Exists {new_question_command} command for Question prompt: {new_question_prompt}")
             else:
                 print("It DOES NOT EXIST")
                 insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
