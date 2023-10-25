@@ -74,9 +74,9 @@ services:
 
   chat_gpt_service:
     container_name: chat_gpt_service
-    image: aftenidaniela/chat_gpt_service:latest
-    # build: 
-    #   context: ./chat_gpt_service
+    # image: aftenidaniela/chat_gpt_service:latest
+    build: 
+      context: ./chat_gpt_service
     ports:
       - "5000:5000"
     depends_on: 
