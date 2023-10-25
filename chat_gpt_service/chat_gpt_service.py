@@ -108,7 +108,7 @@ def create_new_obj(new_user_email, current_time):
 def send_log_request(serviceName, serviceMessage):
     # Create a gRPC channel to connect to the server
     # channel = grpc.insecure_channel('localhost:5297')  # Replace with the actual server address
-    channel = grpc.insecure_channel('notification-server-container:5297')  # Replace with the actual server address
+    channel = grpc.insecure_channel('notification-server-container:80')  # Replace with the actual server address
 
     # Create a gRPC stub
     stub = log_pb2_grpc.NotificationStub(channel)
@@ -283,11 +283,12 @@ def chat():
         # Parse and print the response
         if response.status_code == 200:
             data = response.json()
-            completions = data["choices"][0]["message"]["content"]
-            # print(completions)
-        # else:
-        #     print("Request failed with status code:", response.status_code)
-
+            if "choices" in data and data["choices"]:
+                completions = data["choices"][0]["message"]["content"]
+            else:
+                completions = "No completions available"
+        else:
+            completions = "Request failed with status code: " + str(response.status_code)
         try:
             new_obj = run_with_timeout(
                 create_new_obj,
