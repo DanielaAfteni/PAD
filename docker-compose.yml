@@ -20,7 +20,7 @@ services:
     networks:
       - mynetwork
   notification-server:
-    image: notification-server 
+    image: ilietodirascu/notification-server:latest 
     hostname: notification-server-container
     ports:
       - "5297:80"
@@ -29,7 +29,7 @@ services:
       - mynetwork
     container_name: notification-server-container
   log-consumer:
-    image: log-consumer
+    image: ilietodirascu/log-consumer:latest
     ports:
       - "5216:80"
       - "7192:443"

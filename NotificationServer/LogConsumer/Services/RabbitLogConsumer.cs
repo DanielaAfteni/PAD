@@ -13,8 +13,8 @@ namespace LogConsumer.Services
 {
     public class RabbitLogConsumer : BackgroundService
     {
-        private readonly RabbitMQ.Client.IConnection _connection;
-        private readonly IModel _channel;
+        private RabbitMQ.Client.IConnection _connection;
+        private IModel _channel;
         private readonly ILogger _logger;
         private readonly ChannelType _channelType;
         private readonly ConsumerOptions _consumerOptions;
@@ -26,45 +26,57 @@ namespace LogConsumer.Services
         {
             _logger = logger;
             _consumerOptions = consumerOptions.Value;
-            var factory = new ConnectionFactory { Uri = new Uri(options.Value.ConnectionString)};
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
-            _channel.BasicQos(_consumerOptions.PrefetchSize, _consumerOptions.PrefetchCount, false);
             _logService = logService;
             _rabbitMqOptions = options.Value;
             _channelType = ChannelType.Queue;
-            DeclareEntity();
             
+        }
+        private void InitializeConnection()
+        {
+            var factory = new ConnectionFactory { Uri = new Uri(_rabbitMqOptions.ConnectionString) };
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
+            _channel.BasicQos(_consumerOptions.PrefetchSize, _consumerOptions.PrefetchCount, false);
+            DeclareEntity();
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Started Background Task!");
-            stoppingToken.ThrowIfCancellationRequested();
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += async (ch, ea) =>
+            try
             {
-                try
+                InitializeConnection();
+                _logger.LogInformation("Started Background Task!");
+                stoppingToken.ThrowIfCancellationRequested();
+                var consumer = new EventingBasicConsumer(_channel);
+                consumer.Received += async (ch, ea) =>
                 {
-                    _logger.LogInformation("Received Message");
-                    var content = Encoding.UTF8.GetString(ea.Body.ToArray());
-                    var logRequest = JsonSerializer.Deserialize<LogRequest>(content) ?? throw new Exception("LogRequest was null");
-                    var serviceLog = new ServiceLog
+                    try
                     {
-                        ServiceMessage = logRequest.ServiceMessage,
-                        ServiceName = logRequest.ServiceName,
-                        CreatedAt = logRequest.Time.ToDateTimeOffset()
-                    };
-                    await _logService.AddLog(serviceLog);
-                    _channel.BasicAck(ea.DeliveryTag, multiple: false);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Couldn't save log\n {error}", ex);
-                    _channel.BasicNack(ea.DeliveryTag, false,false);
-                }
-            };
-            _channel.BasicConsume(_consumerOptions.ChannelTarget, false, consumer);
-            return Task.CompletedTask;
+                        _logger.LogInformation("Received Message");
+                        var content = Encoding.UTF8.GetString(ea.Body.ToArray());
+                        var logRequest = JsonSerializer.Deserialize<LogRequest>(content) ?? throw new Exception("LogRequest was null");
+                        var serviceLog = new ServiceLog
+                        {
+                            ServiceMessage = logRequest.ServiceMessage,
+                            ServiceName = logRequest.ServiceName,
+                            CreatedAt = logRequest.Time.ToDateTimeOffset()
+                        };
+                        await _logService.AddLog(serviceLog);
+                        _channel.BasicAck(ea.DeliveryTag, multiple: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("Couldn't save log\n {error}", ex);
+                        _channel.BasicNack(ea.DeliveryTag, false, false);
+                    }
+                };
+                _channel.BasicConsume(_consumerOptions.ChannelTarget, false, consumer);
+                return Task.CompletedTask;
+            }
+            catch(Exception ex)
+            {
+                Thread.Sleep(2000);
+                return ExecuteAsync(stoppingToken);
+            }
         }
         private void DeclareEntity()
         {

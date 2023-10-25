@@ -1,10 +1,9 @@
-﻿using LogConsumer.Configurations;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQUtils;
 
-namespace LogConsumer.HealthChecks
+namespace NotificationServiceServer.HealthChecks
 {
     public class ConnectionHealthCheck : IHealthCheck
     {

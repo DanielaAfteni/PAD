@@ -8,7 +8,7 @@ namespace NotificationServiceServer.Services
     {
         private readonly ILogger<NotificationService> _logger;
         private readonly RabbitMqPublisher _rabbitMqPublisher;
-        public NotificationService (RabbitMqPublisher rabbitMqPublisher, ILogger<NotificationService> logger)
+        public NotificationService(RabbitMqPublisher rabbitMqPublisher, ILogger<NotificationService> logger)
         {
             _logger = logger;
             _rabbitMqPublisher = rabbitMqPublisher;
@@ -19,15 +19,14 @@ namespace NotificationServiceServer.Services
             try
             {
                 var stringRequest = JsonSerializer.Serialize(request);
-                //Thread.Sleep(2000);
-                    _rabbitMqPublisher.SendQueueAsyncAck("Notifications", stringRequest);
+                _rabbitMqPublisher.SendQueueAsyncAck("Notifications", stringRequest);
                 return Task.FromResult(new LogReply { IsSuccess = true });
             }
-            catch(Exception ex) { 
+            catch (Exception ex)
+            {
                 _logger.LogError(ex.Message);
-                return Task.FromResult(new LogReply { IsSuccess=false });
+                return Task.FromResult(new LogReply { IsSuccess = false });
             }
-            
         }
     }
 }
