@@ -9,8 +9,9 @@ namespace LogConsumer.HealthChecks
     public class ConnectionHealthCheck : IHealthCheck
     {
         private readonly ILogger _logger;
-        private readonly object _lock = new object();
         private readonly IOptions<RabbitMqOptions> _options;
+        private readonly IOptions<DatabaseSettings> _databaseSettings;
+
         public ConnectionHealthCheck(IOptions<RabbitMqOptions> options, ILogger<ConnectionHealthCheck> logger)
         {
             _options = options;
@@ -26,14 +27,13 @@ namespace LogConsumer.HealthChecks
                 channel.QueueDeclarePassive("Notifications");
                 if (connection.IsOpen)
                 {
-                    return Task.FromResult(HealthCheckResult.Healthy());
+                    return Task.FromResult(HealthCheckResult.Healthy("Rabbit connection is working"));
                 }
                 throw new Exception("Rabbit Connection Health Check Failed");
             }
             catch (Exception)
             {
-                _logger.LogError("Rabbit Connection Health Check Failed");
-                return Task.FromResult(HealthCheckResult.Unhealthy());
+                return Task.FromResult(HealthCheckResult.Unhealthy("Rabbit Connection Health Check Failed"));
             }
         }
     }
