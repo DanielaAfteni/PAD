@@ -282,6 +282,7 @@ def chat():
 
         # Parse and print the response
         if response.status_code == 200:
+            print("Successful request to Chat GPT")
             data = response.json()
             if "choices" in data and data["choices"]:
                 completions = data["choices"][0]["message"]["content"]
