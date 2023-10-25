@@ -19,7 +19,8 @@ try
     services.AddGrpc();
     services
         .AddGrpcHealthChecks()
-        .AddCheck<ConnectionHealthCheck>("Rabbit connection ping");
+        .AddCheck<ConnectionHealthCheck>("Rabbit connection ping")
+        .AddCheck<MongoConnectionHealthCheck>("Mongo Connection ping");
 
     services.Configure<DatabaseSettings>(configuration.GetSection("MongoDatabase"));
     services.Configure<RabbitMqOptions>(x => x.ConnectionString = configuration.GetConnectionString("RabbitMQ")!);
@@ -27,7 +28,7 @@ try
     services.Configure<HealthCheckPublisherOptions>(options =>
     {
         options.Delay = TimeSpan.FromSeconds(1);
-        options.Period = TimeSpan.FromMinutes(1);
+        options.Period = TimeSpan.FromSeconds(15);
     });
     services.AddSingleton<LogService>();
     services.AddHostedService<RabbitLogConsumer>();
