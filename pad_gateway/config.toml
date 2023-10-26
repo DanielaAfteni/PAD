@@ -1,1 +1,1 @@
-addresses = ["http://localhost:7070/weatherforecast", "http://localhost:7071/weatherforecast"]
+addresses = ["http://gpt1:5000/chat", "http://gpt2:5000/chat","http://gpt3:5000/chat"]

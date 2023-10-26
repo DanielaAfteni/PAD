@@ -1,0 +1,33 @@
+# Ignore files and directories commonly excluded in Rust projects
+**/*.rs.bk
+target/
+Cargo.lock
+
+# Exclude development and build files
+*.swp
+*.swo
+*.git
+*.gitignore
+.vscode/
+.idea/
+Cargo.toml.orig
+Cargo.toml.swp
+
+# Exclude documentation and tests if not needed in the image
+doc/
+tests/
+examples/
+
+# Exclude editor-specific files and directories
+*.sublime-project
+*.sublime-workspace
+*.idea/
+.vscode/
+
+# Exclude configuration files specific to development environment
+.editorconfig
+*.yml
+
+# Exclude temporary and backup files
+*.bak
+
