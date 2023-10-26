@@ -1,7 +1,6 @@
-version: '3.1'
+version: "3.1"
 
 services:
-
   mongo:
     image: mongo
     hostname: my-mongo
@@ -20,7 +19,7 @@ services:
     networks:
       - mynetwork
   notification-server:
-    image: ilietodirascu/notification-server:latest 
+    image: ilietodirascu/notification-server:latest
     hostname: notification-server-container
     ports:
       - "5297:80"
@@ -66,7 +65,7 @@ services:
     image: aftenidaniela/cache_service:latest
     ports:
       - "4000:4000"
-    depends_on: 
+    depends_on:
       - neo4j-database
     restart: always
     networks:
@@ -75,15 +74,49 @@ services:
   chat_gpt_service:
     container_name: chat_gpt_service
     # image: aftenidaniela/chat_gpt_service:latest
-    build: 
+    hostname: gpt1
+    build:
       context: ./chat_gpt_service
     ports:
       - "5000:5000"
-    depends_on: 
+    depends_on:
       - postgres-database
     restart: always
     networks:
       - mynetwork
-
+  chat_gpt_service2:
+    container_name: chat_gpt_service2
+    hostname: gpt2
+    # image: aftenidaniela/chat_gpt_service:latest
+    build:
+      context: ./chat_gpt_service
+    ports:
+      - "5001:5000"
+    depends_on:
+      - postgres-database
+    restart: always
+    networks:
+      - mynetwork
+  chat_gpt_service3:
+    hostname: gpt3
+    container_name: chat_gpt_service3
+    # image: aftenidaniela/chat_gpt_service:latest
+    build:
+      context: ./chat_gpt_service
+    ports:
+      - "5002:5000"
+    depends_on:
+      - postgres-database
+    restart: always
+    networks:
+      - mynetwork
+  gateway:
+    container_name: gateway
+    image: ilietodirascu/gateway:latest
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - mynetwork
 networks:
   mynetwork:
