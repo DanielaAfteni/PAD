@@ -62,6 +62,9 @@ REST-APIs, RabbitMQ - notifications
 
 ### System architecture diagram
 
+![General Overview](Checkpoint1/architecture.jpeg)
+
+
 ![General Overview](Checkpoint1/general_overview.jpg)
 
 
