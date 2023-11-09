@@ -56,11 +56,14 @@ Docker simplifies the deployment process. You can create a Docker image once and
 
 ### Technology Stack and Communication Patterns
 
-.net MAUI, python, C# , Rust -languages
+python, C#, Rust -languages
 
 REST-APIs, RabbitMQ - notifications
 
 ### System architecture diagram
+
+![General Overview](Checkpoint1/architecture2.jpeg)
+
 
 ![General Overview](Checkpoint1/architecture.jpeg)
 
@@ -73,6 +76,27 @@ REST-APIs, RabbitMQ - notifications
 ## Design Data Management
 
 ### Chat GPT service endpoints:
+
+- http://localhost:8080/chat
+
+
+- POST JSON Request to ask a question to gateway:
+```sh
+{
+  "user_email": "john.doe@example.com",
+  "question": "What is the capital of Moldova?"
+}
+```
+
+
+- JSON Response after asking a question to gateway:
+```sh
+{
+  "response": "The capital of Moldova is Chisinau."
+}
+```
+
+
 
 - http://localhost:5000/addcommand
 
