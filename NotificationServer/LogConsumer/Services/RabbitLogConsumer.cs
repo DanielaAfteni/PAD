@@ -72,7 +72,7 @@ namespace LogConsumer.Services
                 _channel.BasicConsume(_consumerOptions.ChannelTarget, false, consumer);
                 return Task.CompletedTask;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 Thread.Sleep(2000);
                 return ExecuteAsync(stoppingToken);

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NotificationServiceServer.HealthChecks;
+using NotificationServiceServer.Interceptors;
 using NotificationServiceServer.Services;
 using Prometheus;
 using RabbitMQUtils;
@@ -14,9 +15,13 @@ try
     // Add services to the container.
     var services = builder.Services;
     var configuration = builder.Configuration;
-    services.AddGrpc();
+    services.AddGrpc(options =>
+    {
+        options.Interceptors.Add<MetricsInterceptor>();
+    });
     services.AddGrpcHealthChecks()
-                    .AddCheck<ConnectionHealthCheck>("Rabbit connection ping");
+                    .AddCheck<ConnectionHealthCheck>("Rabbit connection ping")
+                    .ForwardToPrometheus();
     services.Configure<RabbitMqOptions>(x => x.ConnectionString = configuration.GetConnectionString("RabbitMQ")!);
     services.AddSingleton<RabbitMqPublisher>();
     services.AddScoped<NotificationService>();
@@ -30,11 +35,12 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
+    app.UseRouting();
+    app.UseGrpcMetrics();
     app.MapGrpcService<NotificationService>();
     app.MapGrpcHealthChecksService();
     app.MapGrpcReflectionService();
-    app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-
+    app.MapMetrics();
     app.Run();
 }
 catch (Exception ex)
