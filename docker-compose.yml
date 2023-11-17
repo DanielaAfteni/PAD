@@ -1,39 +1,39 @@
 version: "3.1"
 
 services:
-  # mongo:
-  #   image: mongo
-  #   hostname: my-mongo
-  #   restart: always
-  #   ports:
-  #     - 27017:27017
-  #   networks:
-  #     - mynetwork
-  # rabbit:
-  #   image: rabbitmq:3-management
-  #   container_name: bunny
-  #   hostname: my-rabbit
-  #   ports:
-  #     - "15672:15672"
-  #     - "5672:5672"
-  #   networks:
-  #     - mynetwork
-  # notification-server:
-  #   image: ilietodirascu/notification-server:latest
-  #   hostname: notification-server-container
-  #   ports:
-  #     - "5297:80"
-  #     - "7082:443"
-  #   networks:
-  #     - mynetwork
-  #   container_name: notification-server-container
-  # log-consumer:
-  #   image: ilietodirascu/log-consumer:latest
-  #   ports:
-  #     - "5216:80"
-  #     - "7192:443"
-  #   networks:
-  #     - mynetwork
+  mongo:
+    image: mongo
+    hostname: my-mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - mynetwork
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: bunny
+    hostname: my-rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - mynetwork
+  notification-server:
+    image: ilietodirascu/notification-server:latest
+    hostname: notification-server-container
+    ports:
+      - "5297:80"
+      - "7082:443"
+    networks:
+      - mynetwork
+    container_name: notification-server-container
+  log-consumer:
+    image: ilietodirascu/log-consumer:latest
+    ports:
+      - "5216:80"
+      - "7192:443"
+    networks:
+      - mynetwork
 
   # neo4j-database:
   #   container_name: neo4j-database
@@ -47,18 +47,18 @@ services:
   #   networks:
   #     - mynetwork
 
-  # postgres-database:
-  #   container_name: postgres-database
-  #   image: postgres:latest
-  #   hostname: postgres-database
-  #   restart: always
-  #   ports:
-  #     - 5433:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: postgres-db
-  #   networks:
-  #     - mynetwork
+  postgres-database:
+    container_name: postgres-database
+    image: postgres:latest
+    hostname: postgres-database
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres-db
+    networks:
+      - mynetwork
 
   # cache_service:
   #   container_name: cache_service
@@ -137,53 +137,53 @@ services:
       - mynetwork
 
 
-  # chat_gpt_service:
-  #   container_name: chat_gpt_service
-  #   # image: aftenidaniela/chat_gpt_service:latest
-  #   hostname: gpt1
-  #   build:
-  #     context: ./chat_gpt_service
-  #   ports:
-  #     - "5000:5000"
-  #   depends_on:
-  #     - postgres-database
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-  # chat_gpt_service2:
-  #   container_name: chat_gpt_service2
-  #   hostname: gpt2
-  #   # image: aftenidaniela/chat_gpt_service:latest
-  #   build:
-  #     context: ./chat_gpt_service
-  #   ports:
-  #     - "5001:5000"
-  #   depends_on:
-  #     - postgres-database
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-  # chat_gpt_service3:
-  #   hostname: gpt3
-  #   container_name: chat_gpt_service3
-  #   # image: aftenidaniela/chat_gpt_service:latest
-  #   build:
-  #     context: ./chat_gpt_service
-  #   ports:
-  #     - "5002:5000"
-  #   depends_on:
-  #     - postgres-database
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-  # gateway:
-  #   container_name: gateway
-  #   image: ilietodirascu/gateway:latest
-  #   ports:
-  #     - "8080:8080"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
+  chat_gpt_service:
+    container_name: chat_gpt_service
+    # image: aftenidaniela/chat_gpt_service:latest
+    hostname: gpt1
+    build:
+      context: ./chat_gpt_service
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres-database
+    restart: always
+    networks:
+      - mynetwork
+  chat_gpt_service2:
+    container_name: chat_gpt_service2
+    hostname: gpt2
+    # image: aftenidaniela/chat_gpt_service:latest
+    build:
+      context: ./chat_gpt_service
+    ports:
+      - "5001:5000"
+    depends_on:
+      - postgres-database
+    restart: always
+    networks:
+      - mynetwork
+  chat_gpt_service3:
+    hostname: gpt3
+    container_name: chat_gpt_service3
+    # image: aftenidaniela/chat_gpt_service:latest
+    build:
+      context: ./chat_gpt_service
+    ports:
+      - "5002:5000"
+    depends_on:
+      - postgres-database
+    restart: always
+    networks:
+      - mynetwork
+  gateway:
+    container_name: gateway
+    image: ilietodirascu/gateway:latest
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - mynetwork
 # networks:
 #   mynetwork:
 
