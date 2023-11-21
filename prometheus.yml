@@ -3,12 +3,12 @@ global:
   evaluation_interval: 5s
 
 scrape_configs:
-  # - job_name: "prometheus"
-  #   static_configs:
-  #     - targets: ["host.docker.internal:9090"]
-  # - job_name: "notification_server"
-  #   static_configs:
-  #     - targets: ["notification-server-container:5298"]
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9090"]
+  - job_name: "notification_server"
+    static_configs:
+      - targets: ["notification-server-container:5298"]
   - job_name: "chat_gpt_service"
     static_configs:
       - targets: ["gpt1:5000", 'gpt2:5001', 'gpt3:5002']
