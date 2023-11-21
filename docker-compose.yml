@@ -243,12 +243,6 @@ services:
     restart: always
     networks:
       - mynetwork
-# networks:
-#   mynetwork:
-
-# networks:
-#   mynetwork:
-#     driver: bridge
   prometheus:
     container_name: prometheus
     hostname: prometheus
@@ -274,6 +268,5 @@ services:
       - mynetwork
 networks:
   mynetwork:
-    driver: bridge
 volumes:
   grafana_data:
