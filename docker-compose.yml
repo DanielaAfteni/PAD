@@ -19,8 +19,8 @@ services:
     networks:
       - mynetwork
   notification-server:
-    # image: ilietodirascu/notification-server:latest
-    image: notification-server
+    image: ilietodirascu/notification-server:latest
+    # image: notification-server
     hostname: notification-server-container
     ports:
       - "5297:80"
