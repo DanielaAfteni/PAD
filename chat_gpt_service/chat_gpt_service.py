@@ -233,32 +233,32 @@ def chat():
         # Define the prompt you want to send to the model
         prompt = new_question_prompt
 
-        # # Send a POST request to the API
-        # response = requests.post(
-        #     api_endpoint,
-        #     headers={
-        #         "Authorization": f"Bearer {api_key}",
-        #     },
-        #     json={
-        #         "model": "gpt-3.5-turbo",
-        #         "messages": [{"role": "user", "content": prompt}],
-        #         "temperature": 0.7
-        #     }
-        # )
-        # if timeout_event.is_set():
-        #     print("Request timed out.")
+        # Send a POST request to the API
+        response = requests.post(
+            api_endpoint,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+            },
+            json={
+                "model": "gpt-3.5-turbo",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7
+            }
+        )
+        if timeout_event.is_set():
+            print("Request timed out.")
 
-        # # Parse and print the response
-        # if response.status_code == 200:
-        #     print("Successful request to Chat GPT")
-        #     data = response.json()
-        #     if "choices" in data and data["choices"]:
-        #         completions = data["choices"][0]["message"]["content"]
-        #     else:
-        #         completions = "No completions available"
-        # else:
-        #     completions = "Request failed with status code: " + str(response.status_code)
-        completions = "ChatGPT is here to answer!"
+        # Parse and print the response
+        if response.status_code == 200:
+            print("Successful request to Chat GPT")
+            data = response.json()
+            if "choices" in data and data["choices"]:
+                completions = data["choices"][0]["message"]["content"]
+            else:
+                completions = "No completions available"
+        else:
+            completions = "Request failed with status code: " + str(response.status_code)
+        # completions = "ChatGPT is here to answer!"
         try:
             new_obj = run_with_timeout(
                 create_new_obj,
