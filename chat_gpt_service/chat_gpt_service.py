@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from datetime import datetime
 import threading
 import time
@@ -15,37 +15,35 @@ import json
 import random
 import psycopg2
 
+# from prometheus_client import start_http_server, Counter, Enum, generate_latest, REGISTRY
+# from prometheus_client.exposition import make_wsgi_app
+# from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import Counter, generate_latest, REGISTRY, Gauge
+from prometheus_client.exposition import MetricsHandler
 
-# connection = sqlite3.connect("config.db")
-# cursor = connection.cursor()
-
-# cursor.execute('''CREATE TABLE IF NOT EXISTS api_config (
-#                     id INTEGER PRIMARY KEY,
-#                     api_key TEXT
-#                  )''')
-
-# # Commit the changes and close the connection
-# connection.commit()
-# connection.close()
 
 app = Flask(__name__)
+# metrics = PrometheusMetrics(app)
 
-
+p = int(os.environ.get("PROMETHEUS_PORT", 4401))
 # Define a critical load threshold (e.g., 60 pings per second)
 CRITICAL_LOAD_THRESHOLD = 60
 pings = 0
 
 user_list = []
-service_status = "Healthy"  # Initial status
+service_status = "Healthy"  
 
+# Create Prometheus metrics
+counter = Counter(f"chat_gpt_requests_{p}_total", f"Requests_{p}")
+# requests_counter = Counter(f"chat_gpt_requests_{p}", f"Requests_{p}")
+# REGISTRY.register(requests_counter)
 
-# create_table_query = """
-# CREATE TABLE IF NOT EXISTS my_table (
-#     id serial PRIMARY KEY,
-#     new_question VARCHAR(255) UNIQUE,
-#     new_question_description VARCHAR(255)
-# );
-# """
+# timeouts_counter = Counter('t_an_timeouts_total', 'Timeouts')
+# success_counter = Counter('t_an_successful_requests_total', 'Successful Requests')
+# error_counter = Counter('t_an_errors_total', 'Errors')
+# database_state = Enum('t_an_database_state', 'Database State', states=['connected', 'not connected'])
+# register_state = Enum('t_an_register_state', 'Register State', states=['registered', 'not registered'])
+
 
 
 # Limit the number of concurrent tasks to 10
@@ -56,21 +54,12 @@ def reset_counter():
         global pings
         time.sleep(1)
         pings = 0
-        # print("Resetting counter")
-        # print(pings)
 
 
 def check_load():
     global pings
     if pings >= CRITICAL_LOAD_THRESHOLD:
         print("ALERT: Health Monitoring and Alerts")
-
-
-def send_alert(alert_message):
-    # Implement the logic to send an alert, for example, send an email or push notification
-    # You can use third-party libraries for sending alerts
-
-    print("ALERT:", alert_message)
 
 
 def run_with_timeout(func, timeout, *args, **kwargs):
@@ -137,7 +126,9 @@ def send_log_request(serviceName, serviceMessage):
     else:
         print("Request failed on the port 5297.")
 
-
+# @app.route('/metrics')
+# def metrics():
+#     return generate_latest(REGISTRY)
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -145,26 +136,20 @@ def chat():
     if request.method == 'POST':
         global pings
         pings += 1
-        # print("Request received")
-        # print(pings)
         check_load()
         timeout_seconds = 5
         timeout_event = threading.Event()
 
         def timeout_handler():
             timeout_event.set()
-            # print("Timer is set.")
 
         timer_thread = threading.Timer(timeout_seconds, timeout_handler)
         timer_thread.start()
-        # time.sleep(3)
         if timeout_event.is_set():
             print("Request timed out.")
-        # new_user_email = request.form['user_email']
-        # new_question = request.form['question']
 
-        new_user_email = request.json.get('user_email')  # Access data as JSON
-        new_question_command = request.json.get('question')  # Access data as JSON
+        new_user_email = request.json.get('user_email')  
+        new_question_command = request.json.get('question')  
         new_question_prompt = ""
 
         try:
@@ -202,8 +187,6 @@ def chat():
             else:
                 print("Table 'my_table' does not exist. You may need to create it.")
 
-            
-
             # Check if 'new_question' exists in the table
             cursor.execute("SELECT new_question_prompt FROM my_table WHERE new_question_command = %s", (new_question_command,))
             existing_description = cursor.fetchone()
@@ -213,21 +196,6 @@ def chat():
             else:
                 print("It DOES NOT EXIST")
                 new_question_prompt = new_question_command
-                # # If 'new_question' doesn't exist, insert it and its description
-                # insert_data_query = "INSERT INTO my_table (new_question, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
-                # data_to_insert = (new_question, "Default Description")  # You can set your own default description
-                # cursor.execute(insert_data_query, data_to_insert)
-                # connection.commit()
-                # new_question_prompt = "Default Description"  # Use the default description
-                # If 'new_question' doesn't exist, insert it and its description
-                # insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
-                # data_to_insert = (new_question_command, new_question_prompt)  # You can set your own default description
-                # cursor.execute(insert_data_query, data_to_insert)
-                # connection.commit()
-                # new_question_prompt = "Default Description"  # Use the default description
-                
-
-
 
 
         except (Exception, psycopg2.Error) as error:
@@ -290,6 +258,7 @@ def chat():
                 completions = "No completions available"
         else:
             completions = "Request failed with status code: " + str(response.status_code)
+        # completions = "ChatGPT is here to answer!"
         try:
             new_obj = run_with_timeout(
                 create_new_obj,
@@ -352,13 +321,6 @@ def command():
             )
 
             cursor = connection.cursor()
-            #         # SQL command to delete the table
-            # delete_table_query = f'DROP TABLE IF EXISTS my_table;'
-
-            # # Execute the SQL command to delete the table
-            # cursor.execute(delete_table_query)
-            # connection.commit()
-            # print("the table was deleted")
 
             create_table_query = """
             CREATE TABLE IF NOT EXISTS my_table (
@@ -370,9 +332,6 @@ def command():
 
             cursor.execute(create_table_query)
             connection.commit()
-            # cursor.execute("TRUNCATE my_table;")
-            # connection.commit()
-            # print("Table 'my_table' has been cleared.")
 
             cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('my_table',))
             table_exists = cursor.fetchone()[0]
@@ -383,7 +342,6 @@ def command():
                 print("Table 'my_table' does not exist. You may need to create it.")
 
             
-
             # Check if 'new_question_command' exists in the table
             cursor.execute("SELECT new_question_prompt FROM my_table WHERE new_question_command = %s", (new_question_command,))
             existing_description = cursor.fetchone()
@@ -413,23 +371,20 @@ def command():
         return jsonify({}), 200
 
 
-
-
-
     
 
 @app.route('/status', methods=['GET'])
 def get_status():
     timeout_seconds = 2
     timeout_event = threading.Event()
+    counter.inc()
+    # requests_counter.inc()
 
     def timeout_handler():
         timeout_event.set()
-        # print("Timer is set.")
 
     timer_thread = threading.Timer(timeout_seconds, timeout_handler)
     timer_thread.start()
-    # time.sleep(3)
     if timeout_event.is_set():
         print("Request timed out.")
     global service_status
@@ -473,39 +428,98 @@ def check_health():
         time.sleep(10)  # Check health every 10 seconds
 
 
+# # Endpoint for Prometheus to scrape metrics
+# app.route('/metrics')(MetricsHandler.factory(REGISTRY))
+
+@app.route('/metrics')
+def metrics():
+    return Response(generate_latest(), content_type='text/plain')
 
 
+@app.route('/get_connection', methods=['GET'])
+def get_connection():
+    try:
+        # Attempt to connect to the PostgreSQL database
+        conn = psycopg2.connect(
+                user="postgres",
+                password="password",
+                # host="localhost",
+                host="postgres-database",
+                # host="192.168.2.150",
+                # port="5433",
+                database="postgres-db"
+            )
+        conn.close()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"status": "not ok", "error": str(e)}), 500
 
+# Endpoint for creating a user in chat_gpt_service
+@app.route('/create', methods=['POST'])
+def create_user():
+    data = request.get_json()
 
-# def get_api_key():
-#     connection = sqlite3.connect("config.db")
-#     cursor = connection.cursor()
+    try:
+        # Connect to the PostgreSQL database
+        conn = psycopg2.connect(
+                user="postgres",
+                password="password",
+                # host="localhost",
+                host="postgres-database",
+                # host="192.168.2.150",
+                # port="5433",
+                database="postgres-db"
+            )
+        cursor = conn.cursor()
 
-#     # Retrieve the API key from the database
-#     cursor.execute("SELECT api_key FROM api_config WHERE id = 1")
-#     api_key = cursor.fetchone()
+        # Create the user table if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS chat_users (
+                name VARCHAR(255) PRIMARY KEY,
+                name_appearance VARCHAR(255) NOT NULL
+            )
+        ''')
 
-#     connection.close()
+        # Insert user data into the table
+        cursor.execute('INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)', (data['name'], data['name_appearance']))
 
-#     return api_key[0] if api_key else None
+        # Commit the changes and close the connection
+        conn.commit()
+        conn.close()
 
+        return jsonify({"status": "success", "message": "User created successfully in chat_gpt_service."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-# def insert_api_key(api_key):
-#     connection = sqlite3.connect("config.db")
-#     cursor = connection.cursor()
+@app.route('/undo', methods=['DELETE'])
+def undo_change():
+    data = request.get_json()
 
-#     # Insert the API key into the database
-#     cursor.execute("INSERT INTO api_config (api_key) VALUES (?)", (api_key,))
-#     connection.commit()
-#     connection.close()
+    try:
+        # Connect to the PostgreSQL database
+        conn = psycopg2.connect(
+                user="postgres",
+                password="password",
+                # host="localhost",
+                host="postgres-database",
+                # host="192.168.2.150",
+                # port="5433",
+                database="postgres-db"
+            )
+        cursor = conn.cursor()
 
-# # Insert your API key into the database
+        # Delete the user with the given name and name_appearance from the table
+        cursor.execute('DELETE FROM chat_users WHERE name = %s AND name_appearance = %s', (data['name'], data['name_appearance']))
 
-# insert_api_key("a")
+        # Commit the changes and close the connection
+        conn.commit()
+        conn.close()
 
+        return jsonify({"status": "success", "message": "Change undone in chat_gpt_service."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == '__main__':
-    # Start a thread for health checking
     health_check_thread = threading.Thread(target=check_health)
     health_check_thread.daemon = True
     health_check_thread.start()
@@ -513,70 +527,9 @@ if __name__ == '__main__':
     reset_thread = threading.Thread(target=reset_counter, daemon=True)
 
     reset_thread.start()
-    # reset_thread.join()
 
     
-
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-
-
-# def load_service_config():
-#     # Load service configuration from a JSON file
-#     with open('replica.json', 'r') as json_file:
-#         services_config = json.load(json_file)
-#     return services_config
-
-# def start_services(services_config):
-#     for service_name, service_info in services_config.items():
-#         service_port = random.choice(service_info['ports'])
-#         print(f"Starting service '{service_name}' on port {service_port}...")
-#         # Start your service with the specified service_name and service_port
-#         # You can create a new Flask app and run it on the specified port
-#         service_app = Flask(__name__)
-#         service_app.run(host="0.0.0.0", port=service_port, debug=True)
-
-# def start_server(service_name, port):
-#     app.run(host="0.0.0.0", port=port, debug=True)
-
-# def start_services(service_config):
-#     service_name = list(service_config.keys())[0]  # Get the service name
-#     ports = service_config[service_name].get("ports")
-#     # for i in range(2):
-#     if ports:
-#         selected_port = random.choice(ports)
-#         print(f"Starting {service_name} on port {selected_port}")
-#         start_server(service_name, selected_port)
-
-# def load_service_config():
-#     with open('chat_gpt_service\service.json', 'r') as json_file:
-#         service_config = json.load(json_file)
-#         return service_config
-
-# if __name__ == '__main__':
-#     health_check_thread = threading.Thread(target=check_health)
-#     health_check_thread.daemon = True
-#     health_check_thread.start()
-
-#     reset_thread = threading.Thread(target=reset_counter, daemon=True)
-#     reset_thread.start()
-
-#     # Load service configuration
-#     services_config = load_service_config()
-
-#     services = []
-
-#     # Start services based on the configuration
-#     for i in range(2):
-#         # start_services(services_config)
-
-#         service_thread = threading.Thread(target=start_services(services_config), daemon=True)
-#         services.append(service_thread)
-#     for service in services:
-#         service.start()
-        
-
-
 
 
 # py chat_gpt_service\chat_gpt_service.py
