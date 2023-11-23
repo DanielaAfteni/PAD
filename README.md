@@ -56,11 +56,17 @@ Docker simplifies the deployment process. You can create a Docker image once and
 
 ### Technology Stack and Communication Patterns
 
-.net MAUI, python, C# , Ruby -languages
+python, C#, Rust -languages
 
 REST-APIs, RabbitMQ - notifications
 
 ### System architecture diagram
+
+![General Overview](Checkpoint1/architecture2.jpeg)
+
+
+![General Overview](Checkpoint1/architecture.jpeg)
+
 
 ![General Overview](Checkpoint1/general_overview.jpg)
 
@@ -69,122 +75,136 @@ REST-APIs, RabbitMQ - notifications
 
 ## Design Data Management
 
-### User authentication:
+### Chat GPT service endpoints:
 
-- JSON Request to Register a New User:
+- http://localhost:8080/chat
+
+
+- POST JSON Request to ask a question to gateway:
 ```sh
 {
-  "username": "john_doe",
-  "email": "john.doe@example.com",
-  "password": "secure_password123"
+  "user_email": "john.doe@example.com",
+  "question": "What is the capital of Moldova?"
 }
 ```
 
-- JSON Response for User Registration:
+
+- JSON Response after asking a question to gateway:
 ```sh
 {
-  "status": "success",
-  "message": "User registered successfully"
+  "response": "The capital of Moldova is Chisinau."
 }
 ```
 
-- JSON Request to Authenticate a User (Login):
+
+
+- http://localhost:5000/addcommand
+
+
+- POST JSON Request to create a command asigned to for Question prompt(user will not ask full question but just the send the command):
 ```sh
 {
-  "username": "john_doe",
-  "password": "secure_password123"
+  "command": "Moldova",
+  "question": "What is the capital of Moldova?"
 }
 ```
 
-- JSON Response for User Authentication (Login):
+- JSON Response after creation of a command asigned to for Question prompt(user will not ask full question but just the send the command):
 ```sh
 {
-  "status": "success",
-  "message": "User authenticated successfully",
-  "user_id": "12345",
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "response": "Was created Moldova command for Question prompt: What is the capital of Moldova?"
 }
 ```
 
-### Fitness Tracking Module:
 
-- JSON Request to Log a Workout:
+- http://localhost:5000/chat
+
+
+- POST JSON Request to ask a question or command to Chat GPT:
 ```sh
 {
-  "user_id": "12345",
-  "activity": "Running",
-  "distance_km": 5.0,
-  "duration_minutes": 30,
-  "date": "2023-09-27"
+  "user_email": "john.doe@example.com",
+  "question": "What is the capital of Moldova?"
 }
 ```
 
-- JSON Response for Workout Logging:
 ```sh
 {
-  "status": "success",
-  "message": "Workout logged successfully",
-  "workout_id": "67890"
+  "user_email": "john.doe@example.com",
+  "question": "Moldova"
 }
 ```
 
-### University Management Module:
-
- - JSON Request to Enroll in a Course:
+- JSON Response after asking a question or command to Chat GPT:
 ```sh
 {
-  "user_id": "12345",
-  "course_id": "CS101",
-  "semester": "Fall 2023"
+  "response": "The capital of Moldova is Chisinau."
 }
 ```
 
-- JSON Response for Course Enrollment:
+
+- http://localhost:5000/status
+
+
+- GET JSON Response after asking the status:
 ```sh
 {
-  "status": "success",
-  "message": "Enrolled in CS101 for Fall 2023"
+  "status": Healthy
 }
 ```
 
-### Personal Mentoring Module:
+### Cache service endpoints:
 
-- JSON Request to Schedule a Mentorship Session:
+
+- http://localhost:4000/create_node
+
+
+- POST JSON Request to create a node in neo4j:
 ```sh
 {
-  "user_id": "12345",
-  "mentor_id": "67890",
-  "session_datetime": "2023-10-05T15:00:00",
-  "topic": "Career Guidance"
+  "key": "Node3",
+  "value": "3"
 }
 ```
 
-- JSON Response for Mentorship Session Scheduling:
+- JSON Response after creation of a node in neo4j:
 ```sh
 {
-  "status": "success",
-  "message": "Mentorship session scheduled for 2023-10-05 at 3:00 PM"
+  "message": "Node created successfully"
 }
 ```
 
-### Notifications Module (using RabbitMQ):
 
+- http://localhost:4000/delete_node
+
+
+- POST JSON Request to delete a node in neo4j:
 ```sh
-syntax = "proto3";
-
-message FitnessActivityNotification {
-  string user_id = 1;
-  string activity_id = 2;
-  string message = 3;
-  repeated string channels = 4;
+{
+  "key": "Node3"
 }
+```
 
-message NotificationResponse {
-  bool success = 1;
-  string message = 2;
+- JSON Response after deleting of a node in neo4j:
+```sh
+{
+  "message": "Node deleted successfully"
 }
+```
 
-service NotificationService {
-  rpc SendFitnessActivityNotification(FitnessActivityNotification) returns (NotificationResponse);
+- http://localhost:4000/get_value
+
+
+- Get JSON Request to get tje value of a node in neo4j:
+```sh
+{
+  "key": "Node3"
+}
+```
+
+- JSON Response after getting the value of a node in neo4j:
+```sh
+{
+  "value": "3"
 }
 ```
