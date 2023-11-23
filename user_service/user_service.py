@@ -12,10 +12,10 @@ def get_connection():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database1",
+                host="user-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db1"
+                database="user-db"
                 # 'dbname': 'your_database_name',
                 # 'user': 'your_username',
                 # 'password': 'your_password',
@@ -38,10 +38,10 @@ def create_user():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database1",
+                host="user-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db1"
+                database="user-db"
                 # 'dbname': 'your_database_name',
                 # 'user': 'your_username',
                 # 'password': 'your_password',
@@ -80,10 +80,10 @@ def undo_change():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database1",
+                host="user-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db1"
+                database="user-db"
                 # 'dbname': 'your_database_name',
                 # 'user': 'your_username',
                 # 'password': 'your_password',

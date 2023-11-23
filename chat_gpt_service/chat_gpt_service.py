@@ -157,16 +157,16 @@ def chat():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database",
+                host="chat-gpt-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db"
+                database="chat-gpt-db"
             )
 
             cursor = connection.cursor()
 
             create_table_query = """
-            CREATE TABLE IF NOT EXISTS my_table (
+            CREATE TABLE IF NOT EXISTS question_command_table (
                 id serial PRIMARY KEY,
                 new_question_command VARCHAR(255) UNIQUE,
                 new_question_prompt VARCHAR(255)
@@ -175,20 +175,20 @@ def chat():
 
             cursor.execute(create_table_query)
             connection.commit()
-            # cursor.execute("TRUNCATE my_table;")
+            # cursor.execute("TRUNCATE question_command_table;")
             # connection.commit()
-            # print("Table 'my_table' has been cleared.")
+            # print("Table 'question_command_table' has been cleared.")
 
-            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('my_table',))
+            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('question_command_table',))
             table_exists = cursor.fetchone()[0]
 
             if table_exists:
-                print("Table 'my_table' exists.")
+                print("Table 'question_command_table' exists.")
             else:
-                print("Table 'my_table' does not exist. You may need to create it.")
+                print("Table 'question_command_table' does not exist. You may need to create it.")
 
             # Check if 'new_question' exists in the table
-            cursor.execute("SELECT new_question_prompt FROM my_table WHERE new_question_command = %s", (new_question_command,))
+            cursor.execute("SELECT new_question_prompt FROM question_command_table WHERE new_question_command = %s", (new_question_command,))
             existing_description = cursor.fetchone()
             if existing_description is not None:
                 print("It EXISTS")
@@ -314,16 +314,16 @@ def command():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database",
+                host="chat-gpt-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db"
+                database="chat-gpt-db"
             )
 
             cursor = connection.cursor()
 
             create_table_query = """
-            CREATE TABLE IF NOT EXISTS my_table (
+            CREATE TABLE IF NOT EXISTS question_command_table (
                 id serial PRIMARY KEY,
                 new_question_command VARCHAR(255) UNIQUE,
                 new_question_prompt VARCHAR(255)
@@ -333,17 +333,17 @@ def command():
             cursor.execute(create_table_query)
             connection.commit()
 
-            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('my_table',))
+            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)", ('question_command_table',))
             table_exists = cursor.fetchone()[0]
 
             if table_exists:
-                print("Table 'my_table' exists.")
+                print("Table 'question_command_table' exists.")
             else:
-                print("Table 'my_table' does not exist. You may need to create it.")
+                print("Table 'question_command_table' does not exist. You may need to create it.")
 
             
             # Check if 'new_question_command' exists in the table
-            cursor.execute("SELECT new_question_prompt FROM my_table WHERE new_question_command = %s", (new_question_command,))
+            cursor.execute("SELECT new_question_prompt FROM question_command_table WHERE new_question_command = %s", (new_question_command,))
             existing_description = cursor.fetchone()
             if existing_description is not None:
                 print("It EXISTS")
@@ -351,7 +351,7 @@ def command():
                 print(f"Exists {new_question_command} command for Question prompt: {new_question_prompt}")
             else:
                 print("It DOES NOT EXIST")
-                insert_data_query = "INSERT INTO my_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
+                insert_data_query = "INSERT INTO question_command_table (new_question_command, new_question_prompt) VALUES (%s, %s) RETURNING new_question_prompt;"
                 data_to_insert = (new_question_command, new_question_prompt)
                 cursor.execute(insert_data_query, data_to_insert)
                 connection.commit()
@@ -444,10 +444,10 @@ def get_connection():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database",
+                host="chat-gpt-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db"
+                database="chat-gpt-db"
             )
         conn.close()
         return jsonify({"status": "ok"})
@@ -465,10 +465,10 @@ def create_user():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database",
+                host="chat-gpt-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db"
+                database="chat-gpt-db"
             )
         cursor = conn.cursor()
 
@@ -501,10 +501,10 @@ def undo_change():
                 user="postgres",
                 password="password",
                 # host="localhost",
-                host="postgres-database",
+                host="chat-gpt-database",
                 # host="192.168.2.150",
                 # port="5433",
-                database="postgres-db"
+                database="chat-gpt-db"
             )
         cursor = conn.cursor()
 
