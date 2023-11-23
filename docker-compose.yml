@@ -48,29 +48,29 @@ services:
   #   networks:
   #     - mynetwork
 
-  postgres-database:
-    container_name: postgres-database
+  chat-gpt-database:
+    container_name: chat-gpt-database
     image: postgres:latest
-    hostname: postgres-database
+    hostname: chat-gpt-database
     restart: always
     ports:
       - 5433:5432
     environment:
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres-db
+      POSTGRES_DB: chat-gpt-db
     networks:
       - mynetwork
 
-  postgres-database1:
-    container_name: postgres-database1
+  user-database:
+    container_name: user-database
     image: postgres:latest
-    hostname: postgres-database1
+    hostname: user-database
     restart: always
     ports:
       - 5434:5432
     environment:
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres-db1
+      POSTGRES_DB: user-db
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 15s
@@ -163,7 +163,7 @@ services:
     ports:
       - "6000:6000"
     depends_on:
-      - postgres-database1
+      - user-database
     restart: always
     networks:
       - mynetwork
@@ -272,7 +272,7 @@ services:
       - "5000:5000"
       # - "4401:4401"
     depends_on:
-      - postgres-database
+      - chat-gpt-database
     restart: always
     networks:
       - mynetwork
@@ -288,7 +288,7 @@ services:
       - "5001:5000"
       # - "4402:4402"
     depends_on:
-      - postgres-database
+      - chat-gpt-database
     restart: always
     networks:
       - mynetwork
@@ -304,7 +304,7 @@ services:
       - "5002:5000"
       # - "4403:4403"
     depends_on:
-      - postgres-database
+      - chat-gpt-database
     restart: always
     networks:
       - mynetwork
