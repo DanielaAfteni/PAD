@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataWarehouse", "DataWarehouse\DataWarehouse.csproj", "{71ED9C60-4C8B-4A17-AC32-FDAE6A548FA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.DataContext", "Users.DataContext\Users.DataContext.csproj", "{FB5D788E-0AD9-457E-97E6-83CC202E4DD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGPT.DataContext", "ChatGPT.DataContext\ChatGPT.DataContext.csproj", "{54943C35-E7CE-43B2-9713-963A8FB32EDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataWarehouse.DataContext", "DataWarehouse.DataContext\DataWarehouse.DataContext.csproj", "{7A66C3CA-53C2-4B34-B273-870081199730}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71ED9C60-4C8B-4A17-AC32-FDAE6A548FA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71ED9C60-4C8B-4A17-AC32-FDAE6A548FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71ED9C60-4C8B-4A17-AC32-FDAE6A548FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71ED9C60-4C8B-4A17-AC32-FDAE6A548FA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB5D788E-0AD9-457E-97E6-83CC202E4DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB5D788E-0AD9-457E-97E6-83CC202E4DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB5D788E-0AD9-457E-97E6-83CC202E4DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB5D788E-0AD9-457E-97E6-83CC202E4DD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54943C35-E7CE-43B2-9713-963A8FB32EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54943C35-E7CE-43B2-9713-963A8FB32EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54943C35-E7CE-43B2-9713-963A8FB32EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54943C35-E7CE-43B2-9713-963A8FB32EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A66C3CA-53C2-4B34-B273-870081199730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A66C3CA-53C2-4B34-B273-870081199730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A66C3CA-53C2-4B34-B273-870081199730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A66C3CA-53C2-4B34-B273-870081199730}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {39E944BD-DE05-4417-BADA-59A6E4716AC2}
+	EndGlobalSection
+EndGlobal

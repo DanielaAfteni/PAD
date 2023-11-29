@@ -1,6 +1,14 @@
 version: "3.1"
 
 services:
+  datawarehouse-service:
+    image: ilietodirascu/datawarehouse:latest
+    container_name: datawarehouse
+    hostname: datawarehouse-service
+    ports:
+      - 27018:80
+    networks:
+      - mynetwork
   mongo:
     image: mongo
     hostname: my-mongo
@@ -60,6 +68,17 @@ services:
       POSTGRES_DB: chat-gpt-db
     networks:
       - mynetwork
+  datawarehouse-database:
+    container_name: datawarehouse-database
+    image: postgres:latest
+    hostname: datawarehouse-database
+    restart: always
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_PASSWORD: password
+    networks:
+      - mynetwork
 
   user-database:
     container_name: user-database
@@ -72,7 +91,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: user-db
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -96,7 +115,7 @@ services:
   #     retries: 5
   #   networks:
   #     - mynetwork
-  
+
   # postgres-database3:
   #   container_name: postgres-database3
   #   image: postgres:latest
@@ -150,7 +169,7 @@ services:
   #     retries: 5
   #   networks:
   #     - mynetwork
-  
+
   user_service:
     container_name: user_service
     # image: aftenidaniela/user_service:latest
@@ -201,13 +220,13 @@ services:
     build:
       context: ./consistent_hashing_service
     environment:
-        - SERVICE_COUNT=3  # Number of cache services
-        - SERVICE_NAME_1=cache_service1
-        - SERVICE_PORT_1=4000
-        - SERVICE_NAME_2=cache_service2
-        - SERVICE_PORT_2=4001
-        - SERVICE_NAME_3=cache_service3
-        - SERVICE_PORT_3=4002
+      - SERVICE_COUNT=3 # Number of cache services
+      - SERVICE_NAME_1=cache_service1
+      - SERVICE_PORT_1=4000
+      - SERVICE_NAME_2=cache_service2
+      - SERVICE_PORT_2=4001
+      - SERVICE_NAME_3=cache_service3
+      - SERVICE_PORT_3=4002
     ports:
       - "9000:9000"
     restart: always
@@ -258,7 +277,6 @@ services:
     restart: always
     networks:
       - mynetwork
-
 
   chat_gpt_service:
     container_name: chat_gpt_service
