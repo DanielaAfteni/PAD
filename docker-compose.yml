@@ -60,6 +60,58 @@ services:
       POSTGRES_DB: chat-gpt-db
     networks:
       - mynetwork
+  
+  chat-gpt-database1:
+    container_name: chat-gpt-database1
+    image: postgres:latest
+    hostname: chat-gpt-database1
+    restart: always
+    ports:
+      - 5439:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db1
+    networks:
+      - mynetwork
+
+  chat-gpt-database2:
+    container_name: chat-gpt-database2
+    image: postgres:latest
+    hostname: chat-gpt-database2
+    restart: always
+    ports:
+      - 5440:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db2
+    networks:
+      - mynetwork
+
+  chat-gpt-database3:
+    container_name: chat-gpt-database3
+    image: postgres:latest
+    hostname: chat-gpt-database3
+    restart: always
+    ports:
+      - 5441:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db3
+    networks:
+      - mynetwork
+
+  chat-gpt-database4:
+    container_name: chat-gpt-database4
+    image: postgres:latest
+    hostname: chat-gpt-database4
+    restart: always
+    ports:
+      - 5442:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db4
+    networks:
+      - mynetwork
 
   user-database:
     container_name: user-database
@@ -295,11 +347,35 @@ services:
       context: ./chat_gpt_service
     environment:
       - PROMETHEUS_PORT=4401
+      - DB_USER_MASTER=postgres
+      - DB_PASSWORD_MASTER=password
+      - DB_HOST_MASTER=chat-gpt-database
+      - DB_NAME_MASTER=chat-gpt-db
+      - DB_USER_REPLICA_1=postgres
+      - DB_PASSWORD_REPLICA_1=password
+      - DB_HOST_REPLICA_1=chat-gpt-database1
+      - DB_NAME_REPLICA_1=chat-gpt-db1
+      - DB_USER_REPLICA_2=postgres
+      - DB_PASSWORD_REPLICA_2=password
+      - DB_HOST_REPLICA_2=chat-gpt-database2
+      - DB_NAME_REPLICA_2=chat-gpt-db2
+      - DB_USER_REPLICA_3=postgres
+      - DB_PASSWORD_REPLICA_3=password
+      - DB_HOST_REPLICA_3=chat-gpt-database3
+      - DB_NAME_REPLICA_3=chat-gpt-db3
+      - DB_USER_REPLICA_4=postgres
+      - DB_PASSWORD_REPLICA_4=password
+      - DB_HOST_REPLICA_4=chat-gpt-database4
+      - DB_NAME_REPLICA_4=chat-gpt-db4
     ports:
       - "5000:5000"
       # - "4401:4401"
     depends_on:
       - chat-gpt-database
+      - chat-gpt-database1
+      - chat-gpt-database2
+      - chat-gpt-database3
+      - chat-gpt-database4
     restart: always
     networks:
       - mynetwork
@@ -311,11 +387,35 @@ services:
       context: ./chat_gpt_service
     environment:
       - PROMETHEUS_PORT=4402
+      - DB_USER_MASTER=postgres
+      - DB_PASSWORD_MASTER=password
+      - DB_HOST_MASTER=chat-gpt-database
+      - DB_NAME_MASTER=chat-gpt-db
+      - DB_USER_REPLICA_1=postgres
+      - DB_PASSWORD_REPLICA_1=password
+      - DB_HOST_REPLICA_1=chat-gpt-database1
+      - DB_NAME_REPLICA_1=chat-gpt-db1
+      - DB_USER_REPLICA_2=postgres
+      - DB_PASSWORD_REPLICA_2=password
+      - DB_HOST_REPLICA_2=chat-gpt-database2
+      - DB_NAME_REPLICA_2=chat-gpt-db2
+      - DB_USER_REPLICA_3=postgres
+      - DB_PASSWORD_REPLICA_3=password
+      - DB_HOST_REPLICA_3=chat-gpt-database3
+      - DB_NAME_REPLICA_3=chat-gpt-db3
+      - DB_USER_REPLICA_4=postgres
+      - DB_PASSWORD_REPLICA_4=password
+      - DB_HOST_REPLICA_4=chat-gpt-database4
+      - DB_NAME_REPLICA_4=chat-gpt-db4
     ports:
       - "5001:5000"
       # - "4402:4402"
     depends_on:
       - chat-gpt-database
+      - chat-gpt-database1
+      - chat-gpt-database2
+      - chat-gpt-database3
+      - chat-gpt-database4
     restart: always
     networks:
       - mynetwork
@@ -327,11 +427,35 @@ services:
       context: ./chat_gpt_service
     environment:
       - PROMETHEUS_PORT=4403
+      - DB_USER_MASTER=postgres
+      - DB_PASSWORD_MASTER=password
+      - DB_HOST_MASTER=chat-gpt-database
+      - DB_NAME_MASTER=chat-gpt-db
+      - DB_USER_REPLICA_1=postgres
+      - DB_PASSWORD_REPLICA_1=password
+      - DB_HOST_REPLICA_1=chat-gpt-database1
+      - DB_NAME_REPLICA_1=chat-gpt-db1
+      - DB_USER_REPLICA_2=postgres
+      - DB_PASSWORD_REPLICA_2=password
+      - DB_HOST_REPLICA_2=chat-gpt-database2
+      - DB_NAME_REPLICA_2=chat-gpt-db2
+      - DB_USER_REPLICA_3=postgres
+      - DB_PASSWORD_REPLICA_3=password
+      - DB_HOST_REPLICA_3=chat-gpt-database3
+      - DB_NAME_REPLICA_3=chat-gpt-db3
+      - DB_USER_REPLICA_4=postgres
+      - DB_PASSWORD_REPLICA_4=password
+      - DB_HOST_REPLICA_4=chat-gpt-database4
+      - DB_NAME_REPLICA_4=chat-gpt-db4
     ports:
       - "5002:5000"
       # - "4403:4403"
     depends_on:
       - chat-gpt-database
+      - chat-gpt-database1
+      - chat-gpt-database2
+      - chat-gpt-database3
+      - chat-gpt-database4
     restart: always
     networks:
       - mynetwork
