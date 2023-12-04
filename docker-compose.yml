@@ -278,62 +278,72 @@ services:
     networks:
       - mynetwork
 
-  chat_gpt_service:
-    container_name: chat_gpt_service
-    # image: aftenidaniela/chat_gpt_service:latest
-    hostname: gpt1
-    build:
-      context: ./chat_gpt_service
+  # chat_gpt_service:
+  #   container_name: chat_gpt_service
+  #   # image: aftenidaniela/chat_gpt_service:latest
+  #   hostname: gpt1
+  #   build:
+  #     context: ./chat_gpt_service
+  #   environment:
+  #     - PROMETHEUS_PORT=4401
+  #   ports:
+  #     - "5000:5000"
+  #     # - "4401:4401"
+  #   depends_on:
+  #     - chat-gpt-database
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+  # chat_gpt_service2:
+  #   container_name: chat_gpt_service2
+  #   hostname: gpt2
+  #   # image: aftenidaniela/chat_gpt_service:latest
+  #   build:
+  #     context: ./chat_gpt_service
+  #   environment:
+  #     - PROMETHEUS_PORT=4402
+  #   ports:
+  #     - "5001:5000"
+  #     # - "4402:4402"
+  #   depends_on:
+  #     - chat-gpt-database
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+  # chat_gpt_service3:
+  #   hostname: gpt3
+  #   container_name: chat_gpt_service3
+  #   # image: aftenidaniela/chat_gpt_service:latest
+  #   build:
+  #     context: ./chat_gpt_service
+  #   environment:
+  #     - PROMETHEUS_PORT=4403
+  #   ports:
+  #     - "5002:5000"
+  #     # - "4403:4403"
+  #   depends_on:
+  #     - chat-gpt-database
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+  dotnet_gateway:
+    container_name: dotnet_gateway
+    image: ilietodirascu/dotnet-gateway
+    ports:
+      - 8080:8080
+    restart: always
     environment:
-      - PROMETHEUS_PORT=4401
-    ports:
-      - "5000:5000"
-      # - "4401:4401"
-    depends_on:
-      - chat-gpt-database
-    restart: always
+      - DOCKER_HOST=tcp://0.0.0.0:2375
     networks:
       - mynetwork
-  chat_gpt_service2:
-    container_name: chat_gpt_service2
-    hostname: gpt2
-    # image: aftenidaniela/chat_gpt_service:latest
-    build:
-      context: ./chat_gpt_service
-    environment:
-      - PROMETHEUS_PORT=4402
-    ports:
-      - "5001:5000"
-      # - "4402:4402"
-    depends_on:
-      - chat-gpt-database
-    restart: always
-    networks:
-      - mynetwork
-  chat_gpt_service3:
-    hostname: gpt3
-    container_name: chat_gpt_service3
-    # image: aftenidaniela/chat_gpt_service:latest
-    build:
-      context: ./chat_gpt_service
-    environment:
-      - PROMETHEUS_PORT=4403
-    ports:
-      - "5002:5000"
-      # - "4403:4403"
-    depends_on:
-      - chat-gpt-database
-    restart: always
-    networks:
-      - mynetwork
-  gateway:
-    container_name: gateway
-    image: ilietodirascu/gateway:latest
-    ports:
-      - "8080:8080"
-    restart: always
-    networks:
-      - mynetwork
+  # gateway:
+  #   container_name: gateway
+  #   image: ilietodirascu/gateway:latest
+  #   ports:
+  #     - "8080:8080"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
   prometheus:
     container_name: prometheus
     hostname: prometheus
