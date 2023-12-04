@@ -191,7 +191,11 @@ def replicate_data():
 
                     # Insert data into the replica table
                     for row in data:
-                        replica_cursor.execute('INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)', (row[0], row[1]))
+                        replica_cursor.execute('''
+                            INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)
+                            ON CONFLICT (name) DO UPDATE SET name_appearance = EXCLUDED.name_appearance
+                        ''', (row[0], row[1]))
+                        # replica_cursor.execute('INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)', (row[0], row[1]))
 
                 # Commit changes outside the cursor context
                 replica_conn.commit()
@@ -653,7 +657,12 @@ def create_user():
         ''')
 
         # Insert user data into the table
-        cursor.execute('INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)', (data['name'], data['name_appearance']))
+        cursor.execute('''
+            INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)
+            ON CONFLICT (name) DO UPDATE SET name_appearance = EXCLUDED.name_appearance
+        ''', (data['name'], data['name_appearance']))
+        
+        # cursor.execute('INSERT INTO chat_users (name, name_appearance) VALUES (%s, %s)', (data['name'], data['name_appearance']))
 
         # Commit the changes and close the connection
         conn.commit()

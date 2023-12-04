@@ -488,7 +488,11 @@ def replicate_data():
 
                     # Insert data into the replica table
                     for row in data:
-                        replica_cursor.execute('INSERT INTO users (email, name) VALUES (%s, %s)', (row[0], row[1]))
+                        replica_cursor.execute('''
+                            INSERT INTO users (email, name) VALUES (%s, %s)
+                            ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name
+                        ''', (row[0], row[1]))
+                        # replica_cursor.execute('INSERT INTO users (email, name) VALUES (%s, %s)', (row[0], row[1]))
 
                 # Commit changes outside the cursor context
                 replica_conn.commit()
@@ -543,7 +547,11 @@ def create_user():
         ''')
 
         # Insert user data into the table
-        cursor.execute('INSERT INTO users (email, name) VALUES (%s, %s)', (data['email'], data['name']))
+        cursor.execute('''
+            INSERT INTO users (email, name) VALUES (%s, %s)
+            ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name
+        ''', (data['email'], data['name']))
+        # cursor.execute('INSERT INTO users (email, name) VALUES (%s, %s)', (data['email'], data['name']))
 
         # Commit the changes and close the connection
         conn.commit()
