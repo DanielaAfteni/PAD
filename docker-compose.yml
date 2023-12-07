@@ -346,7 +346,6 @@ services:
     build:
       context: ./chat_gpt_service
     environment:
-      - PROMETHEUS_PORT=4401
       - DB_USER_MASTER=postgres
       - DB_PASSWORD_MASTER=password
       - DB_HOST_MASTER=chat-gpt-database
@@ -386,7 +385,6 @@ services:
     build:
       context: ./chat_gpt_service
     environment:
-      - PROMETHEUS_PORT=4402
       - DB_USER_MASTER=postgres
       - DB_PASSWORD_MASTER=password
       - DB_HOST_MASTER=chat-gpt-database
@@ -426,7 +424,6 @@ services:
     build:
       context: ./chat_gpt_service
     environment:
-      - PROMETHEUS_PORT=4403
       - DB_USER_MASTER=postgres
       - DB_PASSWORD_MASTER=password
       - DB_HOST_MASTER=chat-gpt-database

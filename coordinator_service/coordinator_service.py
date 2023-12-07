@@ -5,7 +5,11 @@ import threading
 app = Flask(__name__)
 
 # Server URLs
-chat_gpt_url = "http://gpt1:5000"
+# chat_gpt_url = "http://gpt1:5000"
+
+# chat_gpt_url = "http://gpt:5000"
+
+chat_gpt_url = "http://host.docker.internal:5000"
 user_service_url = "http://user_service:6000"
 
 # Helper function for asynchronous request
