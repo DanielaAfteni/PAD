@@ -43,7 +43,7 @@ user_list = []
 service_status = "Healthy"  
 
 # Create Prometheus metrics
-counter = Counter(f"chat_gpt_requests_{p}_total", f"Requests_{p}")
+counter = Counter(f"chat_gpt_requests_total", f"Requests_{p}")
 # requests_counter = Counter(f"chat_gpt_requests_{p}", f"Requests_{p}")
 # REGISTRY.register(requests_counter)
 
