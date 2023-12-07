@@ -12,9 +12,9 @@ namespace DotnetGateway.Services
             //_dockerClient = new DockerClientConfiguration(new Uri("tcp://localhost:2375")).CreateClient();
         }
 
-        public async Task CreateAndRunContainerAsync(string imageName, string containerName, string networkName, string hostName,string machinePort,string virtualPort)
+        public async Task CreateAndRunContainerAsync(string imageName, string containerName, string networkName, string hostName, string machinePort, string virtualPort)
         {
-            await RunContainerAsync(imageName, containerName, networkName, hostName,machinePort,virtualPort);
+            await RunContainerAsync(imageName, containerName, networkName, hostName, machinePort, virtualPort);
         }
 
         private async Task RunContainerAsync(string imageName, string containerName, string networkName, string hostName, string machinePort, string virtualPort)
@@ -50,6 +50,29 @@ namespace DotnetGateway.Services
             // Add more port bindings as needed
         },
                 },
+                Env = new List<string>
+        {
+            "DB_USER_MASTER=postgres",
+            "DB_PASSWORD_MASTER=password",
+            "DB_HOST_MASTER=chat-gpt-database",
+            "DB_NAME_MASTER=chat-gpt-db",
+            "DB_USER_REPLICA_1=postgres",
+            "DB_PASSWORD_REPLICA_1=password",
+            "DB_HOST_REPLICA_1=chat-gpt-database1",
+            "DB_NAME_REPLICA_1=chat-gpt-db1",
+            "DB_USER_REPLICA_2=postgres",
+            "DB_PASSWORD_REPLICA_2=password",
+            "DB_HOST_REPLICA_2=chat-gpt-database2",
+            "DB_NAME_REPLICA_2=chat-gpt-db2",
+            "DB_USER_REPLICA_3=postgres",
+            "DB_PASSWORD_REPLICA_3=password",
+            "DB_HOST_REPLICA_3=chat-gpt-database3",
+            "DB_NAME_REPLICA_3=chat-gpt-db3",
+            "DB_USER_REPLICA_4=postgres",
+            "DB_PASSWORD_REPLICA_4=password",
+            "DB_HOST_REPLICA_4=chat-gpt-database4",
+            "DB_NAME_REPLICA_4=chat-gpt-db4",
+        },
             };
 
             var response = await _dockerClient.Containers.CreateContainerAsync(createParameters);

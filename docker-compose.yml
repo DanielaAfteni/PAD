@@ -189,7 +189,7 @@ services:
 
   coordinator_service:
     container_name: coordinator_service
-    # image: aftenidaniela/coordinator_service:latest
+    image: aftenidaniela/pad-coordinator_service:latest
     hostname: coordinator_service
     build:
       context: ./coordinator_service
