@@ -1,5 +1,6 @@
 ﻿using DotnetGateway.Endpoints.ChatGpt;
 using Microsoft.Extensions.Options;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -19,13 +20,13 @@ namespace DotnetGateway.Services
             _httpClient = client;
         }
 
-        public async Task<string> Balance(Request req,int depth)
+        public async Task<string> Balance(ChatGptRequest req,int depth = 0)
         {
             if(depth > 10) { return ""; }
             try
             {
                 using var jsonContent = new StringContent(JsonSerializer.Serialize(req), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(await GetNextReplicaAddress(), jsonContent);
+                var response = await _httpClient.PostAsync(await GetNextReplicaAddress(req), jsonContent);
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 return jsonResponse;
             }catch(Exception ex) 
@@ -33,7 +34,23 @@ namespace DotnetGateway.Services
                 Thread.Sleep(1000);
                 return await Balance(req,++depth);
             }
-
+        }
+        public async Task<string> Balance(AddCommandRequest req, int depth = 0)
+        {
+            if (depth > 4) { return "None of the replicas were available"; }
+            try
+            {
+                using var jsonContent = new StringContent(JsonSerializer.Serialize(req), Encoding.UTF8, "application/json");
+                var replicaAddress = await GetNextReplicaAddress(req);
+                var response = await _httpClient.PostAsync(replicaAddress, jsonContent);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return jsonResponse;
+            }
+            catch (Exception ex)
+            {
+                Thread.Sleep(1000);
+                return await Balance(req, ++depth);
+            }
         }
         private async Task ManageAddresses()
         {
@@ -47,9 +64,18 @@ namespace DotnetGateway.Services
                     $"{_configuration.ContainerName}{Guid.NewGuid().ToString("N")[..8]}"
                     , _configuration.NetworkName,
                     _configuration.HostName, machinePort, _configuration.VirtualPort);
-                var newAddress = new Uri($"http://{_configuration.ExternalHost}:{machinePort}/chat");
+                var newAddress = new Uri($"http://{_configuration.ExternalHost}:{machinePort}/");
                 _addresses.Add(newAddress);
             }
+        }
+        private string GetEndpointBasedOnRequest(object req)
+        {
+            return req switch
+            {
+                AddCommandRequest => "addcommand",
+                ChatGptRequest => "chat",
+                _ => throw new Exception("Invalid Request Type")
+            };
         }
         private async Task CheckExistingContainers()
         {
@@ -57,19 +83,20 @@ namespace DotnetGateway.Services
             var listOfContainerUris = new List<Uri>();
             containerInfo.ForEach(x =>
             {
-                listOfContainerUris.Add(new Uri($"http://{_configuration.ExternalHost}:{x.HostPort}/chat"));
+                listOfContainerUris.Add(new Uri($"http://{_configuration.ExternalHost}:{x.HostPort}/"));
             });
             _addresses = new(listOfContainerUris);
         }
-        private async Task<Uri> GetNextReplicaAddress()
+        private async Task<Uri> GetNextReplicaAddress(object req)
         {
 
             await ManageAddresses();
+            var endpoint = GetEndpointBasedOnRequest(req);
             var selectedAddress = _addresses[_nextReplicaIndex];
 
             _nextReplicaIndex = (_nextReplicaIndex + 1) % _addresses.Count;
 
-            return selectedAddress;
+            return new Uri(selectedAddress,endpoint);
         }
         private string GetAvailablePort()
         {

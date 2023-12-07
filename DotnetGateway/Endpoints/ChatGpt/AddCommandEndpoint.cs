@@ -1,34 +1,33 @@
 ﻿using DotnetGateway.Services;
 using FastEndpoints;
-using System.Text;
 using System.Text.Json;
 
 namespace DotnetGateway.Endpoints.ChatGpt
 {
-    public class ChatGptGetEndpoint : Endpoint<ChatGptRequest, ChatGptResponse>
+    public class AddCommandEndpoint : Endpoint<AddCommandRequest,AddCommandResponse>
     {
         public HttpClient HttpClient { get; set; }
         public DockerService DockerService { get; set; }
         public LoadBalancerService LoadBalancerService { get; set; }
         public override void Configure()
         {
-            Post("/api/ask");
+            Post("/api/add");
             AllowAnonymous();
         }
 
-        public override async Task HandleAsync(ChatGptRequest req, CancellationToken ct)
+        public override async Task HandleAsync(AddCommandRequest req, CancellationToken ct)
         {
             var jsonResponse = await LoadBalancerService.Balance(req);
-            await SendAsync(JsonSerializer.Deserialize<ChatGptResponse>(jsonResponse), 200, ct);
+            await SendAsync(JsonSerializer.Deserialize<AddCommandResponse>(jsonResponse), 200, ct);
 
         }
     }
-    public class ChatGptRequest
+    public class AddCommandRequest
     {
-        public string user_email { get; set; }
+        public string command { get; set; }
         public string question { get; set; }
     }
-    public class ChatGptResponse
+    public class AddCommandResponse
     {
         public string response { get; set; }
     }
