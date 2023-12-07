@@ -1,31 +1,44 @@
 version: "3.1"
 
 services:
-  datawarehouse-service:
-    image: ilietodirascu/datawarehouse:latest
-    container_name: datawarehouse
-    hostname: datawarehouse-service
-    ports:
-      - 27018:80
-    networks:
-      - mynetwork
-  mongo:
-    image: mongo
-    hostname: my-mongo
-    restart: always
-    ports:
-      - 27017:27017
-    networks:
-      - mynetwork
-  rabbit:
-    image: rabbitmq:3-management
-    container_name: bunny
-    hostname: my-rabbit
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    networks:
-      - mynetwork
+  # datawarehouse-service:
+  #   image: ilietodirascu/datawarehouse:latest
+  #   container_name: datawarehouse
+  #   hostname: datawarehouse-service
+  #   ports:
+  #     - 27018:80
+  #   networks:
+  #     - mynetwork
+  
+  # datawarehouse-database:
+  #   container_name: datawarehouse-database
+  #   image: postgres:latest
+  #   hostname: datawarehouse-database
+  #   restart: always
+  #   ports:
+  #     - 5435:5432
+  #   environment:
+  #     POSTGRES_PASSWORD: password
+  #   networks:
+  #     - mynetwork
+
+  # mongo:
+  #   image: mongo
+  #   hostname: my-mongo
+  #   restart: always
+  #   ports:
+  #     - 27017:27017
+  #   networks:
+  #     - mynetwork
+  # rabbit:
+  #   image: rabbitmq:3-management
+  #   container_name: bunny
+  #   hostname: my-rabbit
+  #   ports:
+  #     - "15672:15672"
+  #     - "5672:5672"
+  #   networks:
+  #     - mynetwork
   notification-server:
     image: ilietodirascu/notification-server:latest
     # image: notification-server
@@ -68,15 +81,56 @@ services:
       POSTGRES_DB: chat-gpt-db
     networks:
       - mynetwork
-  datawarehouse-database:
-    container_name: datawarehouse-database
+  
+  chat-gpt-database1:
+    container_name: chat-gpt-database1
     image: postgres:latest
-    hostname: datawarehouse-database
+    hostname: chat-gpt-database1
     restart: always
     ports:
-      - 5435:5432
+      - 5439:5432
     environment:
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db1
+    networks:
+      - mynetwork
+
+  chat-gpt-database2:
+    container_name: chat-gpt-database2
+    image: postgres:latest
+    hostname: chat-gpt-database2
+    restart: always
+    ports:
+      - 5440:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db2
+    networks:
+      - mynetwork
+
+  chat-gpt-database3:
+    container_name: chat-gpt-database3
+    image: postgres:latest
+    hostname: chat-gpt-database3
+    restart: always
+    ports:
+      - 5441:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db3
+    networks:
+      - mynetwork
+
+  chat-gpt-database4:
+    container_name: chat-gpt-database4
+    image: postgres:latest
+    hostname: chat-gpt-database4
+    restart: always
+    ports:
+      - 5442:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat-gpt-db4
     networks:
       - mynetwork
 
@@ -91,105 +145,132 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: user-db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 15s
       timeout: 10s
       retries: 5
     networks:
       - mynetwork
 
-  # postgres-database2:
-  #   container_name: postgres-database2
-  #   image: postgres:latest
-  #   hostname: postgres-database2
-  #   restart: always
-  #   ports:
-  #     - 5435:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: postgres-db2
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #   networks:
-  #     - mynetwork
+  user-database1:
+    container_name: user-database1
+    image: postgres:latest
+    hostname: user-database1
+    restart: always
+    ports:
+      - 5443:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-db1
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mynetwork
+  
+  user-database2:
+    container_name: user-database2
+    image: postgres:latest
+    hostname: user-database2
+    restart: always
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-db2
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mynetwork
 
-  # postgres-database3:
-  #   container_name: postgres-database3
-  #   image: postgres:latest
-  #   hostname: postgres-database3
-  #   restart: always
-  #   ports:
-  #     - 5436:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: postgres-db3
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #   networks:
-  #     - mynetwork
+  user-database3:
+    container_name: user-database3
+    image: postgres:latest
+    hostname: user-database3
+    restart: always
+    ports:
+      - 5437:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-db3
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mynetwork
 
-  # postgres-database4:
-  #   container_name: postgres-database4
-  #   image: postgres:latest
-  #   hostname: postgres-database4
-  #   restart: always
-  #   ports:
-  #     - 5437:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: postgres-db4
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #   networks:
-  #     - mynetwork
-
-  # postgres-database5:
-  #   container_name: postgres-database5
-  #   image: postgres:latest
-  #   hostname: postgres-database5
-  #   restart: always
-  #   ports:
-  #     - 5438:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: postgres-db5
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-  #     interval: 15s
-  #     timeout: 10s
-  #     retries: 5
-  #   networks:
-  #     - mynetwork
-
+  user-database4:
+    container_name: user-database4
+    image: postgres:latest
+    hostname: user-database4
+    restart: always
+    ports:
+      - 5438:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-db4
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mynetwork
+  
   user_service:
     container_name: user_service
     # image: aftenidaniela/user_service:latest
     hostname: user_service
     build:
       context: ./user_service
+    # environment:
+    #   - SERVICE_NAME=node1
+    #   - SERVICE_PORT=4000
     environment:
       - SERVICE_NAME=node1
       - SERVICE_PORT=4000
+      - DB_USER_MASTER=postgres
+      - DB_PASSWORD_MASTER=password
+      - DB_HOST_MASTER=user-database
+      - DB_NAME_MASTER=user-db
+      - DB_USER_REPLICA_1=postgres
+      - DB_PASSWORD_REPLICA_1=password
+      - DB_HOST_REPLICA_1=user-database1
+      - DB_NAME_REPLICA_1=user-db1
+      - DB_USER_REPLICA_2=postgres
+      - DB_PASSWORD_REPLICA_2=password
+      - DB_HOST_REPLICA_2=user-database2
+      - DB_NAME_REPLICA_2=user-db2
+      - DB_USER_REPLICA_3=postgres
+      - DB_PASSWORD_REPLICA_3=password
+      - DB_HOST_REPLICA_3=user-database3
+      - DB_NAME_REPLICA_3=user-db3
+      - DB_USER_REPLICA_4=postgres
+      - DB_PASSWORD_REPLICA_4=password
+      - DB_HOST_REPLICA_4=user-database4
+      - DB_NAME_REPLICA_4=user-db4
     ports:
       - "6000:6000"
     depends_on:
       - user-database
+      - user-database1
+      - user-database2
+      - user-database3
+      - user-database4
     restart: always
     networks:
       - mynetwork
 
   coordinator_service:
     container_name: coordinator_service
-    image: aftenidaniela/pad-coordinator_service:latest
+    # image: aftenidaniela/coordinator_service:latest
     hostname: coordinator_service
     build:
       context: ./coordinator_service
@@ -202,81 +283,82 @@ services:
     networks:
       - mynetwork
 
-  # cache_service:
-  #   container_name: cache_service
-  #   # image: aftenidaniela/cache_service:latest
+  # # cache_service:
+  # #   container_name: cache_service
+  # #   # image: aftenidaniela/cache_service:latest
+  # #   build:
+  # #     context: ./cache_service
+  # #   ports:
+  # #     - "4000:4000"
+  # #   depends_on:
+  # #     - neo4j-database
+  # #   restart: always
+  # #   networks:
+  # #     - mynetwork
+
+  # consistent_hashing_service:
+  #   container_name: consistent_hashing_service
   #   build:
-  #     context: ./cache_service
+  #     context: ./consistent_hashing_service
+  #   environment:
+  #       - SERVICE_COUNT=3  # Number of cache services
+  #       - SERVICE_NAME_1=cache_service1
+  #       - SERVICE_PORT_1=4000
+  #       - SERVICE_NAME_2=cache_service2
+  #       - SERVICE_PORT_2=4001
+  #       - SERVICE_NAME_3=cache_service3
+  #       - SERVICE_PORT_3=4002
   #   ports:
-  #     - "4000:4000"
-  #   depends_on:
-  #     - neo4j-database
+  #     - "9000:9000"
   #   restart: always
   #   networks:
   #     - mynetwork
 
-  consistent_hashing_service:
-    container_name: consistent_hashing_service
-    build:
-      context: ./consistent_hashing_service
-    environment:
-      - SERVICE_COUNT=3 # Number of cache services
-      - SERVICE_NAME_1=cache_service1
-      - SERVICE_PORT_1=4000
-      - SERVICE_NAME_2=cache_service2
-      - SERVICE_PORT_2=4001
-      - SERVICE_NAME_3=cache_service3
-      - SERVICE_PORT_3=4002
-    ports:
-      - "9000:9000"
-    restart: always
-    networks:
-      - mynetwork
+  # cache_service1:
+  #   container_name: cache_service1
+  #   # image: aftenidaniela/cache_service:latest
+  #   # hostname: cache_service
+  #   build:
+  #     context: ./cache_service
+  #   environment:
+  #     - SERVICE_NAME=node1
+  #     - SERVICE_PORT=4000
+  #   ports:
+  #     - "4000:4000"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
 
-  cache_service1:
-    container_name: cache_service1
-    # image: aftenidaniela/cache_service:latest
-    # hostname: cache_service
-    build:
-      context: ./cache_service
-    environment:
-      - SERVICE_NAME=node1
-      - SERVICE_PORT=4000
-    ports:
-      - "4000:4000"
-    restart: always
-    networks:
-      - mynetwork
+  # cache_service2:
+  #   container_name: cache_service2
+  #   # image: aftenidaniela/cache_service:latest
+  #   # hostname: cache_service2
+  #   build:
+  #     context: ./cache_service
+  #   environment:
+  #     - SERVICE_NAME=node2
+  #     - SERVICE_PORT=4001
+  #   ports:
+  #     - "4001:4000"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
 
-  cache_service2:
-    container_name: cache_service2
-    # image: aftenidaniela/cache_service:latest
-    # hostname: cache_service2
-    build:
-      context: ./cache_service
-    environment:
-      - SERVICE_NAME=node2
-      - SERVICE_PORT=4001
-    ports:
-      - "4001:4000"
-    restart: always
-    networks:
-      - mynetwork
+  # cache_service3:
+  #   container_name: cache_service3
+  #   # hostname: cache_service3
+  #   # image: aftenidaniela/cache_service:latest
+  #   build:
+  #     context: ./cache_service
+  #   environment:
+  #     - SERVICE_NAME=node3
+  #     - SERVICE_PORT=4002
+  #   ports:
+  #     - "4002:4000"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
 
-  cache_service3:
-    container_name: cache_service3
-    # hostname: cache_service3
-    # image: aftenidaniela/cache_service:latest
-    build:
-      context: ./cache_service
-    environment:
-      - SERVICE_NAME=node3
-      - SERVICE_PORT=4002
-    ports:
-      - "4002:4000"
-    restart: always
-    networks:
-      - mynetwork
 
   # chat_gpt_service:
   #   container_name: chat_gpt_service
@@ -285,12 +367,35 @@ services:
   #   build:
   #     context: ./chat_gpt_service
   #   environment:
-  #     - PROMETHEUS_PORT=4401
+  #     - DB_USER_MASTER=postgres
+  #     - DB_PASSWORD_MASTER=password
+  #     - DB_HOST_MASTER=chat-gpt-database
+  #     - DB_NAME_MASTER=chat-gpt-db
+  #     - DB_USER_REPLICA_1=postgres
+  #     - DB_PASSWORD_REPLICA_1=password
+  #     - DB_HOST_REPLICA_1=chat-gpt-database1
+  #     - DB_NAME_REPLICA_1=chat-gpt-db1
+  #     - DB_USER_REPLICA_2=postgres
+  #     - DB_PASSWORD_REPLICA_2=password
+  #     - DB_HOST_REPLICA_2=chat-gpt-database2
+  #     - DB_NAME_REPLICA_2=chat-gpt-db2
+  #     - DB_USER_REPLICA_3=postgres
+  #     - DB_PASSWORD_REPLICA_3=password
+  #     - DB_HOST_REPLICA_3=chat-gpt-database3
+  #     - DB_NAME_REPLICA_3=chat-gpt-db3
+  #     - DB_USER_REPLICA_4=postgres
+  #     - DB_PASSWORD_REPLICA_4=password
+  #     - DB_HOST_REPLICA_4=chat-gpt-database4
+  #     - DB_NAME_REPLICA_4=chat-gpt-db4
   #   ports:
   #     - "5000:5000"
   #     # - "4401:4401"
   #   depends_on:
   #     - chat-gpt-database
+  #     - chat-gpt-database1
+  #     - chat-gpt-database2
+  #     - chat-gpt-database3
+  #     - chat-gpt-database4
   #   restart: always
   #   networks:
   #     - mynetwork
@@ -301,12 +406,35 @@ services:
   #   build:
   #     context: ./chat_gpt_service
   #   environment:
-  #     - PROMETHEUS_PORT=4402
+  #     - DB_USER_MASTER=postgres
+  #     - DB_PASSWORD_MASTER=password
+  #     - DB_HOST_MASTER=chat-gpt-database
+  #     - DB_NAME_MASTER=chat-gpt-db
+  #     - DB_USER_REPLICA_1=postgres
+  #     - DB_PASSWORD_REPLICA_1=password
+  #     - DB_HOST_REPLICA_1=chat-gpt-database1
+  #     - DB_NAME_REPLICA_1=chat-gpt-db1
+  #     - DB_USER_REPLICA_2=postgres
+  #     - DB_PASSWORD_REPLICA_2=password
+  #     - DB_HOST_REPLICA_2=chat-gpt-database2
+  #     - DB_NAME_REPLICA_2=chat-gpt-db2
+  #     - DB_USER_REPLICA_3=postgres
+  #     - DB_PASSWORD_REPLICA_3=password
+  #     - DB_HOST_REPLICA_3=chat-gpt-database3
+  #     - DB_NAME_REPLICA_3=chat-gpt-db3
+  #     - DB_USER_REPLICA_4=postgres
+  #     - DB_PASSWORD_REPLICA_4=password
+  #     - DB_HOST_REPLICA_4=chat-gpt-database4
+  #     - DB_NAME_REPLICA_4=chat-gpt-db4
   #   ports:
   #     - "5001:5000"
   #     # - "4402:4402"
   #   depends_on:
   #     - chat-gpt-database
+  #     - chat-gpt-database1
+  #     - chat-gpt-database2
+  #     - chat-gpt-database3
+  #     - chat-gpt-database4
   #   restart: always
   #   networks:
   #     - mynetwork
@@ -317,15 +445,47 @@ services:
   #   build:
   #     context: ./chat_gpt_service
   #   environment:
-  #     - PROMETHEUS_PORT=4403
+  #     - DB_USER_MASTER=postgres
+  #     - DB_PASSWORD_MASTER=password
+  #     - DB_HOST_MASTER=chat-gpt-database
+  #     - DB_NAME_MASTER=chat-gpt-db
+  #     - DB_USER_REPLICA_1=postgres
+  #     - DB_PASSWORD_REPLICA_1=password
+  #     - DB_HOST_REPLICA_1=chat-gpt-database1
+  #     - DB_NAME_REPLICA_1=chat-gpt-db1
+  #     - DB_USER_REPLICA_2=postgres
+  #     - DB_PASSWORD_REPLICA_2=password
+  #     - DB_HOST_REPLICA_2=chat-gpt-database2
+  #     - DB_NAME_REPLICA_2=chat-gpt-db2
+  #     - DB_USER_REPLICA_3=postgres
+  #     - DB_PASSWORD_REPLICA_3=password
+  #     - DB_HOST_REPLICA_3=chat-gpt-database3
+  #     - DB_NAME_REPLICA_3=chat-gpt-db3
+  #     - DB_USER_REPLICA_4=postgres
+  #     - DB_PASSWORD_REPLICA_4=password
+  #     - DB_HOST_REPLICA_4=chat-gpt-database4
+  #     - DB_NAME_REPLICA_4=chat-gpt-db4
   #   ports:
   #     - "5002:5000"
   #     # - "4403:4403"
   #   depends_on:
   #     - chat-gpt-database
+  #     - chat-gpt-database1
+  #     - chat-gpt-database2
+  #     - chat-gpt-database3
+  #     - chat-gpt-database4
   #   restart: always
   #   networks:
   #     - mynetwork
+  # gateway:
+  #   container_name: gateway
+  #   image: ilietodirascu/gateway:latest
+  #   ports:
+  #     - "8080:8080"
+  #   restart: always
+  #   networks:
+  #     - mynetwork
+
   dotnet_gateway:
     container_name: dotnet_gateway
     image: ilietodirascu/dotnet-gateway
@@ -336,14 +496,7 @@ services:
       - DOCKER_HOST=tcp://0.0.0.0:2375
     networks:
       - mynetwork
-  # gateway:
-  #   container_name: gateway
-  #   image: ilietodirascu/gateway:latest
-  #   ports:
-  #     - "8080:8080"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
+
   prometheus:
     container_name: prometheus
     hostname: prometheus
@@ -354,17 +507,20 @@ services:
       - mynetwork
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
+    # command:
+    #   - "--config.file=/etc/prometheus/prometheus.yml"
+
   grafana:
     container_name: grafana
-    image: grafana/grafana
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./grafana:/var/lib/grafana
     networks:
       - mynetwork
 networks:
