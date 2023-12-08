@@ -1,7 +1,9 @@
 using ChatGPT.DataContext;
+using DataWarehouse.Configuration;
 using DataWarehouse.DataContext;
 using DataWarehouse.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Users.DataContext;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,7 @@ builder.Services.AddDbContextPool<UserDbContext>(x =>
 {
     x.UseNpgsql(builder.Configuration.GetConnectionString("Users"));
 });
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("MongoDatabase"));
 builder.Services.AddHostedService<ETLService>();
 
 builder.Services.AddSwaggerGen();
