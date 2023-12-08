@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChatGPT.DataContext\ChatGPT.DataContext.csproj" />
     <ProjectReference Include="..\DataWarehouse.DataContext\DataWarehouse.DataContext.csproj" />
+    <ProjectReference Include="..\MongoLogs.DataContext\MongoLogs.DataContext.csproj" />
     <ProjectReference Include="..\Users.DataContext\Users.DataContext.csproj" />
   </ItemGroup>
 

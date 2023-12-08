@@ -3,8 +3,13 @@ version: "3.1"
 services:
   datawarehouse-service:
     image: ilietodirascu/datawarehouse:latest
+    # image: datawarehouse-service
     container_name: datawarehouse
     hostname: datawarehouse-service
+    depends_on:
+      - user-database
+      - chat-gpt-database
+      - mongo
     ports:
       - 27018:80
     networks:
@@ -73,6 +78,7 @@ services:
     image: postgres:latest
     hostname: datawarehouse-database
     restart: always
+    
     ports:
       - 5435:5432
     environment:
