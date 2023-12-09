@@ -1,6 +1,36 @@
 version: "3.1"
 
 services:
+  datawarehouse-service:
+    image: ilietodirascu/datawarehouse:latest
+    # image: datawarehouse-service
+    container_name: datawarehouse
+    hostname: datawarehouse-service
+    depends_on:
+      - user-database
+      - chat-gpt-database
+      - mongo
+    ports:
+      - 27018:80
+    networks:
+      - mynetwork
+  mongo:
+    image: mongo
+    hostname: my-mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - mynetwork
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: bunny
+    hostname: my-rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - mynetwork
   # datawarehouse-service:
   #   image: ilietodirascu/datawarehouse:latest
   #   container_name: datawarehouse
@@ -126,11 +156,25 @@ services:
     image: postgres:latest
     hostname: chat-gpt-database4
     restart: always
+    
     ports:
       - 5442:5432
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: chat-gpt-db4
+    networks:
+      - mynetwork
+  
+  datawarehouse-database:
+    container_name: datawarehouse-database
+    image: postgres:latest
+    hostname: datawarehouse-database
+    restart: always
+    
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_PASSWORD: password
     networks:
       - mynetwork
 
@@ -296,68 +340,68 @@ services:
   # #   networks:
   # #     - mynetwork
 
-  # consistent_hashing_service:
-  #   container_name: consistent_hashing_service
-  #   build:
-  #     context: ./consistent_hashing_service
-  #   environment:
-  #       - SERVICE_COUNT=3  # Number of cache services
-  #       - SERVICE_NAME_1=cache_service1
-  #       - SERVICE_PORT_1=4000
-  #       - SERVICE_NAME_2=cache_service2
-  #       - SERVICE_PORT_2=4001
-  #       - SERVICE_NAME_3=cache_service3
-  #       - SERVICE_PORT_3=4002
-  #   ports:
-  #     - "9000:9000"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
+  consistent_hashing_service:
+    container_name: consistent_hashing_service
+    build:
+      context: ./consistent_hashing_service
+    environment:
+        - SERVICE_COUNT=3  # Number of cache services
+        - SERVICE_NAME_1=cache_service1
+        - SERVICE_PORT_1=4000
+        - SERVICE_NAME_2=cache_service2
+        - SERVICE_PORT_2=4001
+        - SERVICE_NAME_3=cache_service3
+        - SERVICE_PORT_3=4002
+    ports:
+      - "9000:9000"
+    restart: always
+    networks:
+      - mynetwork
 
-  # cache_service1:
-  #   container_name: cache_service1
-  #   # image: aftenidaniela/cache_service:latest
-  #   # hostname: cache_service
-  #   build:
-  #     context: ./cache_service
-  #   environment:
-  #     - SERVICE_NAME=node1
-  #     - SERVICE_PORT=4000
-  #   ports:
-  #     - "4000:4000"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
+  cache_service1:
+    container_name: cache_service1
+    # image: aftenidaniela/cache_service:latest
+    # hostname: cache_service
+    build:
+      context: ./cache_service
+    environment:
+      - SERVICE_NAME=node1
+      - SERVICE_PORT=4000
+    ports:
+      - "4000:4000"
+    restart: always
+    networks:
+      - mynetwork
 
-  # cache_service2:
-  #   container_name: cache_service2
-  #   # image: aftenidaniela/cache_service:latest
-  #   # hostname: cache_service2
-  #   build:
-  #     context: ./cache_service
-  #   environment:
-  #     - SERVICE_NAME=node2
-  #     - SERVICE_PORT=4001
-  #   ports:
-  #     - "4001:4000"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
+  cache_service2:
+    container_name: cache_service2
+    # image: aftenidaniela/cache_service:latest
+    # hostname: cache_service2
+    build:
+      context: ./cache_service
+    environment:
+      - SERVICE_NAME=node2
+      - SERVICE_PORT=4001
+    ports:
+      - "4001:4000"
+    restart: always
+    networks:
+      - mynetwork
 
-  # cache_service3:
-  #   container_name: cache_service3
-  #   # hostname: cache_service3
-  #   # image: aftenidaniela/cache_service:latest
-  #   build:
-  #     context: ./cache_service
-  #   environment:
-  #     - SERVICE_NAME=node3
-  #     - SERVICE_PORT=4002
-  #   ports:
-  #     - "4002:4000"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
+  cache_service3:
+    container_name: cache_service3
+    # hostname: cache_service3
+    # image: aftenidaniela/cache_service:latest
+    build:
+      context: ./cache_service
+    environment:
+      - SERVICE_NAME=node3
+      - SERVICE_PORT=4002
+    ports:
+      - "4002:4000"
+    restart: always
+    networks:
+      - mynetwork
 
 
   # chat_gpt_service:
@@ -507,8 +551,8 @@ services:
       - mynetwork
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    # command:
-    #   - "--config.file=/etc/prometheus/prometheus.yml"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
 
   grafana:
     container_name: grafana

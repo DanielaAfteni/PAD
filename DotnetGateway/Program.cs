@@ -1,5 +1,6 @@
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using DotnetGateway.Middleware;
 using DotnetGateway.Services;
 using FastEndpoints;
 
@@ -12,5 +13,6 @@ services.AddSingleton<DockerService>();
 services.AddSingleton<LoadBalancerService>();
 var app = builder.Build();
 app.UseFastEndpoints();
+app.UseTimeoutMiddleware(TimeSpan.FromSeconds(30));
 app.Run();
 

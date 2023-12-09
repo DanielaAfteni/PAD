@@ -20,7 +20,6 @@ namespace DotnetGateway.Endpoints.ChatGpt
         {
             var jsonResponse = await LoadBalancerService.Balance(req);
             await SendAsync(JsonSerializer.Deserialize<ChatGptResponse>(jsonResponse), 200, ct);
-
         }
     }
     public class ChatGptRequest

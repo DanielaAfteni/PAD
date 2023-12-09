@@ -11,5 +11,6 @@ namespace DataWarehouse.DataContext
         public DbSet<User> Users { get; set; }
         public DbSet<ChatUser> ChatUsers { get; set; }
         public DbSet<QuestionCommandTable> QuestionCommands { get; set; }
+        public DbSet<ServiceLog> ServiceLogs { get; set; }
     }
 }
