@@ -25,50 +25,15 @@ services:
   rabbit:
     image: rabbitmq:3-management
     container_name: bunny
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=my_long_and_cool_cookie_which_is_also_tasty
     hostname: my-rabbit
     ports:
       - "15672:15672"
       - "5672:5672"
     networks:
       - mynetwork
-  # datawarehouse-service:
-  #   image: ilietodirascu/datawarehouse:latest
-  #   container_name: datawarehouse
-  #   hostname: datawarehouse-service
-  #   ports:
-  #     - 27018:80
-  #   networks:
-  #     - mynetwork
-  
-  # datawarehouse-database:
-  #   container_name: datawarehouse-database
-  #   image: postgres:latest
-  #   hostname: datawarehouse-database
-  #   restart: always
-  #   ports:
-  #     - 5435:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: password
-  #   networks:
-  #     - mynetwork
 
-  # mongo:
-  #   image: mongo
-  #   hostname: my-mongo
-  #   restart: always
-  #   ports:
-  #     - 27017:27017
-  #   networks:
-  #     - mynetwork
-  # rabbit:
-  #   image: rabbitmq:3-management
-  #   container_name: bunny
-  #   hostname: my-rabbit
-  #   ports:
-  #     - "15672:15672"
-  #     - "5672:5672"
-  #   networks:
-  #     - mynetwork
   notification-server:
     image: ilietodirascu/notification-server:latest
     # image: notification-server
@@ -86,18 +51,6 @@ services:
       - "7192:443"
     networks:
       - mynetwork
-
-  # neo4j-database:
-  #   container_name: neo4j-database
-  #   image: neo4j:latest
-  #   hostname: neo4j-database
-  #   restart: always
-  #   ports:
-  #     - 7687:7687
-  #   environment:
-  #     NEO4J_AUTH: neo4j/password
-  #   networks:
-  #     - mynetwork
 
   chat-gpt-database:
     container_name: chat-gpt-database
@@ -326,20 +279,6 @@ services:
     restart: always
     networks:
       - mynetwork
-
-  # # cache_service:
-  # #   container_name: cache_service
-  # #   # image: aftenidaniela/cache_service:latest
-  # #   build:
-  # #     context: ./cache_service
-  # #   ports:
-  # #     - "4000:4000"
-  # #   depends_on:
-  # #     - neo4j-database
-  # #   restart: always
-  # #   networks:
-  # #     - mynetwork
-
   consistent_hashing_service:
     container_name: consistent_hashing_service
     build:
@@ -369,7 +308,6 @@ services:
       - SERVICE_PORT=4000
     ports:
       - "4000:4000"
-    restart: always
     networks:
       - mynetwork
 
@@ -399,137 +337,8 @@ services:
       - SERVICE_PORT=4002
     ports:
       - "4002:4000"
-    restart: always
     networks:
       - mynetwork
-
-
-  # chat_gpt_service:
-  #   container_name: chat_gpt_service
-  #   # image: aftenidaniela/chat_gpt_service:latest
-  #   hostname: gpt1
-  #   build:
-  #     context: ./chat_gpt_service
-  #   environment:
-  #     - DB_USER_MASTER=postgres
-  #     - DB_PASSWORD_MASTER=password
-  #     - DB_HOST_MASTER=chat-gpt-database
-  #     - DB_NAME_MASTER=chat-gpt-db
-  #     - DB_USER_REPLICA_1=postgres
-  #     - DB_PASSWORD_REPLICA_1=password
-  #     - DB_HOST_REPLICA_1=chat-gpt-database1
-  #     - DB_NAME_REPLICA_1=chat-gpt-db1
-  #     - DB_USER_REPLICA_2=postgres
-  #     - DB_PASSWORD_REPLICA_2=password
-  #     - DB_HOST_REPLICA_2=chat-gpt-database2
-  #     - DB_NAME_REPLICA_2=chat-gpt-db2
-  #     - DB_USER_REPLICA_3=postgres
-  #     - DB_PASSWORD_REPLICA_3=password
-  #     - DB_HOST_REPLICA_3=chat-gpt-database3
-  #     - DB_NAME_REPLICA_3=chat-gpt-db3
-  #     - DB_USER_REPLICA_4=postgres
-  #     - DB_PASSWORD_REPLICA_4=password
-  #     - DB_HOST_REPLICA_4=chat-gpt-database4
-  #     - DB_NAME_REPLICA_4=chat-gpt-db4
-  #   ports:
-  #     - "5000:5000"
-  #     # - "4401:4401"
-  #   depends_on:
-  #     - chat-gpt-database
-  #     - chat-gpt-database1
-  #     - chat-gpt-database2
-  #     - chat-gpt-database3
-  #     - chat-gpt-database4
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-  # chat_gpt_service2:
-  #   container_name: chat_gpt_service2
-  #   hostname: gpt2
-  #   # image: aftenidaniela/chat_gpt_service:latest
-  #   build:
-  #     context: ./chat_gpt_service
-  #   environment:
-  #     - DB_USER_MASTER=postgres
-  #     - DB_PASSWORD_MASTER=password
-  #     - DB_HOST_MASTER=chat-gpt-database
-  #     - DB_NAME_MASTER=chat-gpt-db
-  #     - DB_USER_REPLICA_1=postgres
-  #     - DB_PASSWORD_REPLICA_1=password
-  #     - DB_HOST_REPLICA_1=chat-gpt-database1
-  #     - DB_NAME_REPLICA_1=chat-gpt-db1
-  #     - DB_USER_REPLICA_2=postgres
-  #     - DB_PASSWORD_REPLICA_2=password
-  #     - DB_HOST_REPLICA_2=chat-gpt-database2
-  #     - DB_NAME_REPLICA_2=chat-gpt-db2
-  #     - DB_USER_REPLICA_3=postgres
-  #     - DB_PASSWORD_REPLICA_3=password
-  #     - DB_HOST_REPLICA_3=chat-gpt-database3
-  #     - DB_NAME_REPLICA_3=chat-gpt-db3
-  #     - DB_USER_REPLICA_4=postgres
-  #     - DB_PASSWORD_REPLICA_4=password
-  #     - DB_HOST_REPLICA_4=chat-gpt-database4
-  #     - DB_NAME_REPLICA_4=chat-gpt-db4
-  #   ports:
-  #     - "5001:5000"
-  #     # - "4402:4402"
-  #   depends_on:
-  #     - chat-gpt-database
-  #     - chat-gpt-database1
-  #     - chat-gpt-database2
-  #     - chat-gpt-database3
-  #     - chat-gpt-database4
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-  # chat_gpt_service3:
-  #   hostname: gpt3
-  #   container_name: chat_gpt_service3
-  #   # image: aftenidaniela/chat_gpt_service:latest
-  #   build:
-  #     context: ./chat_gpt_service
-  #   environment:
-  #     - DB_USER_MASTER=postgres
-  #     - DB_PASSWORD_MASTER=password
-  #     - DB_HOST_MASTER=chat-gpt-database
-  #     - DB_NAME_MASTER=chat-gpt-db
-  #     - DB_USER_REPLICA_1=postgres
-  #     - DB_PASSWORD_REPLICA_1=password
-  #     - DB_HOST_REPLICA_1=chat-gpt-database1
-  #     - DB_NAME_REPLICA_1=chat-gpt-db1
-  #     - DB_USER_REPLICA_2=postgres
-  #     - DB_PASSWORD_REPLICA_2=password
-  #     - DB_HOST_REPLICA_2=chat-gpt-database2
-  #     - DB_NAME_REPLICA_2=chat-gpt-db2
-  #     - DB_USER_REPLICA_3=postgres
-  #     - DB_PASSWORD_REPLICA_3=password
-  #     - DB_HOST_REPLICA_3=chat-gpt-database3
-  #     - DB_NAME_REPLICA_3=chat-gpt-db3
-  #     - DB_USER_REPLICA_4=postgres
-  #     - DB_PASSWORD_REPLICA_4=password
-  #     - DB_HOST_REPLICA_4=chat-gpt-database4
-  #     - DB_NAME_REPLICA_4=chat-gpt-db4
-  #   ports:
-  #     - "5002:5000"
-  #     # - "4403:4403"
-  #   depends_on:
-  #     - chat-gpt-database
-  #     - chat-gpt-database1
-  #     - chat-gpt-database2
-  #     - chat-gpt-database3
-  #     - chat-gpt-database4
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-  # gateway:
-  #   container_name: gateway
-  #   image: ilietodirascu/gateway:latest
-  #   ports:
-  #     - "8080:8080"
-  #   restart: always
-  #   networks:
-  #     - mynetwork
-
   dotnet_gateway:
     container_name: dotnet_gateway
     image: ilietodirascu/dotnet-gateway
