@@ -22,10 +22,9 @@ namespace DotnetGateway.Services
 
         public async Task<string> Balance(ChatGptRequest req,int depth = 0)
         {
-            if(depth > 4) 
+            if(depth > 3) 
             {
-                var invalidResp = new ChatGptResponse { response = "None of the replicas were reachable" };
-                return JsonSerializer.Serialize(invalidResp);
+                throw new Exception("None of the replicas were available");
             }
             try
             {
@@ -41,10 +40,9 @@ namespace DotnetGateway.Services
         }
         public async Task<string> Balance(AddCommandRequest req, int depth = 0)
         {
-            if (depth > 4)
+            if (depth > 3)
             {
-                var invalidResp = new AddCommandResponse { response = "None of the replicas were reachable" };
-                return JsonSerializer.Serialize(invalidResp);
+                throw new Exception("None of the replicas were available");
             }
             try
             {
