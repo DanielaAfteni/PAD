@@ -21,7 +21,7 @@ from google.protobuf.internal import builder
 # from prometheus_client import start_http_server, Counter, Enum, generate_latest, REGISTRY
 # from prometheus_client.exposition import make_wsgi_app
 # from prometheus_flask_exporter import PrometheusMetrics
-from prometheus_client import Counter, generate_latest, REGISTRY, Gauge
+from prometheus_client import Counter, Enum, generate_latest, REGISTRY, Gauge
 from prometheus_client.exposition import MetricsHandler
 
 
@@ -44,6 +44,9 @@ service_status = "Healthy"
 
 # Create Prometheus metrics
 counter = Counter(f"chat_gpt_requests_total", f"Requests_{p}")
+counter_database_state = Counter(f"counter_database_state", f"Counter_Database_State_{p}")
+database_state = Enum(f"chat_gpt_database_state_total", f"Database_State_{p}", states=['connected', 'not connected'])
+ask_question_gRPC_counter = Counter(f"ask_question_gRPC_counter_total", f"Ask_question_gRPC_counter_{p}")
 # requests_counter = Counter(f"chat_gpt_requests_{p}", f"Requests_{p}")
 # REGISTRY.register(requests_counter)
 
@@ -88,6 +91,7 @@ def perform_failover():
 
     # Check if the master is available
     if not is_master_available():
+
         logger.warning("Master database not available. Performing failover.")
 
         # Calculate the data sizes for each replica
@@ -321,6 +325,7 @@ def chat():
                 # port="5433",
                 database="chat-gpt-db"
             )
+            database_state.state('connected')
 
             cursor = connection.cursor()
 
@@ -358,6 +363,7 @@ def chat():
 
 
         except (Exception, psycopg2.Error) as error:
+            database_state.state('not connected')
             print("Error while connecting to PostgreSQL", error)
         finally:
             if connection:
@@ -432,6 +438,7 @@ def chat():
             # Call the gRPC function to send log request
             current_endpoint = request.endpoint
             send_log_request("Chat GPT Service", f"{current_endpoint} - Endpoint from Chat GPT Service was successful")
+            ask_question_gRPC_counter.inc()
             # completions = new_question_prompt
             return jsonify({"response": completions}), 200
             # return jsonify(user_list), 201
@@ -478,6 +485,7 @@ def command():
                 # port="5433",
                 database="chat-gpt-db"
             )
+            database_state.state('connected')
 
             cursor = connection.cursor()
 
@@ -518,6 +526,7 @@ def command():
 
 
         except (Exception, psycopg2.Error) as error:
+            database_state.state('not connected')
             print("Error while connecting to PostgreSQL", error)
         finally:
             if connection:
