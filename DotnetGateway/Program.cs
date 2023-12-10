@@ -12,6 +12,8 @@ services.Configure<ReplicaConfiguration>(builder.Configuration.GetSection("ChatG
 services.AddSingleton<DockerService>();
 services.AddSingleton<LoadBalancerService>();
 var app = builder.Build();
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<CircuitBreakerMiddleware>();
 app.UseFastEndpoints();
 app.UseTimeoutMiddleware(TimeSpan.FromSeconds(30));
 app.Run();
