@@ -159,7 +159,7 @@ REST-APIs, RabbitMQ - notifications
 - http://localhost:4000/create_node
 
 
-- POST JSON Request to create a node in neo4j:
+- POST JSON Request to create a node:
 ```sh
 {
   "key": "Node3",
@@ -167,7 +167,7 @@ REST-APIs, RabbitMQ - notifications
 }
 ```
 
-- JSON Response after creation of a node in neo4j:
+- JSON Response after creation of a node:
 ```sh
 {
   "message": "Node created successfully"
@@ -178,14 +178,14 @@ REST-APIs, RabbitMQ - notifications
 - http://localhost:4000/delete_node
 
 
-- POST JSON Request to delete a node in neo4j:
+- POST JSON Request to delete a node:
 ```sh
 {
   "key": "Node3"
 }
 ```
 
-- JSON Response after deleting of a node in neo4j:
+- JSON Response after deleting of a node:
 ```sh
 {
   "message": "Node deleted successfully"
@@ -195,16 +195,120 @@ REST-APIs, RabbitMQ - notifications
 - http://localhost:4000/get_value
 
 
-- Get JSON Request to get tje value of a node in neo4j:
+- Get JSON Request to get the value of a node:
 ```sh
 {
   "key": "Node3"
 }
 ```
 
-- JSON Response after getting the value of a node in neo4j:
+- JSON Response after getting the value of a node:
 ```sh
 {
   "value": "3"
 }
 ```
+- http://localhost:4000/get_all_data
+
+- JSON Response after getting the value of a node:
+```sh
+{
+    "Node01": "10"
+}
+```
+
+### Consistent hashing service endpoints:
+
+- http://localhost:9000/forward_request
+
+
+- Post JSON Request to create a node:
+```sh
+{
+  "key": "Node01",
+  "value": "10"
+}
+```
+
+- JSON Response after creating a node:
+```sh
+{
+    "message": "Request forwarded to cache service cache_service3 successfully"
+}
+```
+
+- http://localhost:9000/remove_node
+
+
+- Post JSON Request to remove a cache service:
+```sh
+{
+  "node_name": "cache_service2"
+}
+```
+
+- JSON Response after removing a cache service:
+```sh
+{
+    "message": "Node cache_service2 removed successfully"
+}
+```
+
+- http://localhost:9000/remove_node
+
+
+- Post JSON Request to remove a cache service:
+```sh
+{
+  "node_name": "cache_service2"
+}
+```
+
+- JSON Response after removing a cache service:
+```sh
+{
+    "message": "Node cache_service2 removed successfully"
+}
+```
+
+
+- http://localhost:9000/add_node
+
+
+- Post JSON Request to add a cache service:
+```sh
+{
+  "name": "cache_service2",
+  "port": "4001"
+}
+```
+
+- JSON Response after adding a cache service:
+```sh
+{
+    "message": "Cache service cache_service2 added successfully"
+}
+```
+
+### Saga coordinator service endpoints:
+
+- http://localhost:6001/create_user
+
+
+- Post JSON Request to create a user:
+```sh
+{
+    "email": "2email.com",
+    "name": "2name",
+    "name_appearance": "2two"
+}
+```
+
+### To see database replication + failover in chatGPT service endpoints:
+
+- http://localhost:5000/get_data
+
+
+### To see database replication + failover in user service endpoints:
+
+- http://localhost:6000/get_data
