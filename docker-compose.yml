@@ -49,6 +49,7 @@ services:
     ports:
       - "5216:80"
       - "7192:443"
+    hostname: log-consumer
     networks:
       - mynetwork
 

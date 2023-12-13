@@ -1,5 +1,3 @@
-using Grpc.Health.V1;
-using Grpc.Net.Client;
 using LogConsumer.Configurations;
 using LogConsumer.HealthChecks;
 using LogConsumer.Services;
@@ -20,8 +18,8 @@ try
     services
         .AddGrpcHealthChecks()
         .AddCheck<ConnectionHealthCheck>("Rabbit connection ping")
-        .AddCheck<MongoConnectionHealthCheck>("Mongo Connection ping");
-
+        .AddCheck<MongoConnectionHealthCheck>("Mongo Connection ping")
+        .ForwardToPrometheus();
     services.Configure<DatabaseSettings>(configuration.GetSection("MongoDatabase"));
     services.Configure<RabbitMqOptions>(x => x.ConnectionString = configuration.GetConnectionString("RabbitMQ")!);
     services.Configure<ConsumerOptions>(configuration.GetSection("ConsumerOptions"));
@@ -34,11 +32,11 @@ try
     services.AddHostedService<RabbitLogConsumer>();
     services.AddGrpcReflection();
     var app = builder.Build();
-
+    app.UseRouting();
+    app.UseGrpcMetrics();
     app.MapGrpcHealthChecksService();
-
     app.MapGrpcReflectionService();
-
+    app.MapMetrics();
     app.Run();
 }
 
